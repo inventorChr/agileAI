@@ -78,51 +78,48 @@ Feel free to add or modify features to best represent the functionalities of you
 
 Provide step-by-step instructions on how to install and set up your project. Include any prerequisites, environment setup, and necessary commands.
 
-```bash
-$ git clone https://gitlab.com/waterbear_labs/ai-sprint.git
-$ cd ai-sprint
-$ pip install -r requirements.txt
-```
-
-## Usage
-
 1. **Clone the Repository:**
 
    First, clone the repository to your local machine using the following command:
 
     ```bash
-    $ git clone https://gitlab.com/waterbear_labs/ai-sprint.git
-    $ cd ai-sprint
+    $ git clone https://gitlab.com/chrisdionne/agileai.git
+    $ cd agileai
     ```
 
 2. **Install Dependencies:**
 
-   Navigate to the project directory and install the required dependencies using `pip`:
+   Navigate to the app & server directories and install the required dependencies using `npm i`:
 
     ```bash
-    $ pip install -r requirements.txt
+    $ cd app
+    $ npm i
+    $ cd ../server
+    $ npm i
     ```
 
 3. **Create Environment File:**
 
-   The program looks for an .env file in the base directory that looks for the following:
+   The program looks for an .env file in the base directory for your convenience I created test.env, just rename the file to .env and put in your open ai information.
 
-   OPENAI_API_KEY
-   OPENAI_MODEL_ENGINE
-   MAX_TOKENS
-   TEMPERATURE
-   TOP_P
-   N
-
-   If you are not aware of these values, you can find the meaning at https://platform.openai.com/docs/api-reference
+   If you are not aware of these values for the engine, you can find the meaning at https://platform.openai.com/docs/api-reference
 
 4. **Run the Application:**
 
-   Launch the application using the following command:
+   The application front end is run on Angular and the backend interfacing with Open AI runs in the backend; therefore, you must start both. The first command runs both the backend and frontend.
 
     ```bash
-    $ python app.py
+    $ cd app
+    $ npm run start
     ```
+   If you need to run them separately for debugging purposes:
+
+   ```bash
+   $ cd app
+   $ npm serve
+   $ cd ../server
+   $ npm start
+   ```
 
 5. **Access Agile AI in Your Browser:**
 
