@@ -2,7 +2,7 @@
 
 ## Creators Notes
 
-Thank you for check out my personal project. I started this a few months ago and have worked on it on and off over the past few months. I planned on keeping this closed source until I was finished but due to my day job its making it increasingly more difficult to work on it. Hopefully you see my vision and would like to contribute to the project. Thanks Again!
+Thank you for checking out my personal project. I started this a few months ago and have worked on it on and off over the past few months. I planned on keeping this closed source until I was finished but due to my day job its making it increasingly more difficult to work on it. Hopefully you see my vision and would like to contribute to the project. Thanks Again!
 
 ## Introduction
 
