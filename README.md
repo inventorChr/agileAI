@@ -205,6 +205,10 @@ These technologies and packages combine harmoniously to create a robust developm
 
 Please review [Contributing](CONTRIBUTING.md)
 
+## License
+
+[LICENSE](LICENSE)
+
 ## Reporting Issues
 
 If you encounter bugs, issues, or have suggestions for improvements, please open an issue on the Gitlab repository. Provide as much detail as possible to help us understand and address the problem.
