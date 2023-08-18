@@ -73,14 +73,13 @@ Welcome to the Agile AI experience, where your ideas are transformed into well-d
 
 Feel free to add or modify features to best represent the functionalities of your project.
 
-
 ## Installation
 
-Provide step-by-step instructions on how to install and set up your project. Include any prerequisites, environment setup, and necessary commands.
+Follow these step-by-step instructions to seamlessly install and set up the Agile AI project. Make sure to fulfill any prerequisites and execute the necessary commands for a smooth experience.
 
 1. **Clone the Repository:**
 
-   First, clone the repository to your local machine using the following command:
+   Begin by cloning the project repository to your local machine using the following commands:
 
     ```bash
     $ git clone https://gitlab.com/chrisdionne/agileai.git
@@ -89,29 +88,28 @@ Provide step-by-step instructions on how to install and set up your project. Inc
 
 2. **Install Dependencies:**
 
-   Navigate to the app & server directories and install the required dependencies using `npm i`:
+   Move into both the `app` and `server` directories and install the required dependencies using the following commands:
 
     ```bash
     $ cd app
-    $ npm i
+    $ npm install
     $ cd ../server
-    $ npm i
+    $ npm install
     ```
 
 3. **Create Environment File:**
 
-   The program looks for an .env file in the base directory for your convenience I created test.env, just rename the file to .env and put in your open ai information.
-
-   If you are not aware of these values for the engine, you can find the meaning at https://platform.openai.com/docs/api-reference
+   An environment configuration file is necessary for the project. Rename the provided `test.env` file to `.env` in the base directory. Fill in your Open AI information in the `.env` file. If you're unsure about the values required, consult the [Open AI API reference](https://platform.openai.com/docs/api-reference).
 
 4. **Run the Application:**
 
-   The application front end is run on Angular and the backend interfacing with Open AI runs in the backend; therefore, you must start both. The first command runs both the backend and frontend.
+   The Agile AI application consists of a frontend built with Angular and a backend that interacts with Open AI. To run both, use the following command:
 
     ```bash
     $ cd app
     $ npm run start
     ```
+
    If you need to run them separately for debugging purposes:
 
    ```bash
@@ -123,61 +121,83 @@ Provide step-by-step instructions on how to install and set up your project. Inc
 
 5. **Access Agile AI in Your Browser:**
 
-   Open your web browser and navigate to `http://localhost:5000` to access Agile AI.
+   Open your preferred web browser and go to `http://localhost:4200` to access the Agile AI platform. This is the default address that Angular uses for development.
 
 6. **Engage in Interactive Brainstorming:**
 
-   Upon accessing the platform, engage in interactive brainstorming with Agile AI. Answer questions about your project idea to flesh out its details.
+   Upon accessing the platform, immerse yourself in interactive brainstorming with Agile AI. 
 
 7. **Refine Your Project Outline:**
 
-   Observe how Agile AI refines your project title, crafts a comprehensive project charter, generates a detailed project summary, and develops an elaborate business case.
+   Observe how Agile AI sharpens your project title, constructs a comprehensive project charter, generates a detailed project summary, and formulates an intricate business case.
 
 8. **Customize and Review:**
 
-   Tailor the sections of your project outline to your liking. Review the comprehensive project outline and ensure it accurately captures your vision.
+   Tailor the sections of your project outline to your preferences. Thoroughly review the all-encompassing project outline to ensure it captures your vision accurately.
 
 9. **Collaborate and Export:**
 
-   Collaborate with the AI-driven tool to refine the project outline. Once satisfied, export the finalized project outline.
+   Collaborate closely with the AI-powered tool to enhance the project outline. Once content, export the finalized project outline.
 
 10. **Accelerate Your Project:**
 
-    Utilize the well-structured project outline to accelerate your project planning and execution, reducing time to market.
+    Utilize the well-structured project outline to expedite your project planning and execution, thereby reducing time-to-market.
 
-11. **Contribute and Give Feedback:**
+11. **Contribute and Provide Feedback:**
 
-    If you'd like to contribute to the project, follow the provided contribution guidelines. Your feedback is valuable for the ongoing improvement of Agile AI.
+    If you're inclined to contribute to the project, adhere to the outlined contribution guidelines. Your feedback is invaluable for the ongoing enhancement of Agile AI.
 
-Enjoy the Agile AI experience and let your ideas take shape with strategic project planning!
-
-For more detailed instructions, troubleshooting, and examples, refer to the project documentation.
-
-*NOTE: The process to run the version build with Angular begins in the APP/ directory and does not use any code from the base directory.
+Enjoy the enriching Agile AI experience and watch your ideas transform into strategic project plans!
 
 
 ## Technologies
 
-Agile AI is built on a range of modern and cutting-edge technologies, ensuring a seamless and responsive user experience. The following technologies are utilized in the development of the project:
+This project utilizes a variety of technologies and npm packages to ensure efficient development, feature-rich functionality, and a seamless user experience. Below is a list of key technologies and npm packages that are integral to the project's architecture:
 
-- **Python:** The primary programming language used for building the backend logic and functionality.
+### Angular (Frontend)
+- **@angular/animations**: Version 16.1.0
+- **@angular/cdk**: Version 16.1.1
+- **@angular/common**: Version 16.1.0
+- **@angular/compiler**: Version 16.1.0
+- **@angular/core**: Version 16.1.0
+- **@angular/forms**: Version 16.1.0
+- **@angular/material**: Version 16.1.1
+- **@angular/platform-browser**: Version 16.1.0
+- **@angular/platform-browser-dynamic**: Version 16.1.0
+- **@angular/router**: Version 16.1.0
+- **ngx-markdown**: Version 16.0.0
+- **rxjs**: Version ~7.8.0
+- **tslib**: Version 2.3.0
+- **zone.js**: Version ~0.13.0
 
-- **Flask:** A lightweight and versatile web framework used for developing the backend of the application.
+### Angular Development Tools (Dev Dependencies)
+- **@angular-devkit/build-angular**: Version 16.1.0
+- **@angular/cli**: Version ~16.1.0
+- **@angular/compiler-cli**: Version 16.1.0
+- **@types/jasmine**: Version ~4.3.0
+- **concurrently**: Version 8.2.0
+- **jasmine-core**: Version ~4.6.0
+- **karma**: Version ~6.4.0
+- **karma-chrome-launcher**: Version ~3.2.0
+- **karma-coverage**: Version ~2.2.0
+- **karma-jasmine**: Version ~5.1.0
+- **karma-jasmine-html-reporter**: Version ~2.1.0
+- **typescript**: Version ~5.1.3
 
-- **jQuery:** A fast and feature-rich JavaScript library that enhances the interactive elements and dynamic behavior of the platform.
+### Backend Technologies
+- **axios**: Version 1.4.0
+- **bcrypt**: Version 5.1.0
+- **cors**: Version 2.8.5
+- **dotenv**: Version 16.3.1
+- **express**: Version 4.18.2
+- **jsonwebtoken**: Version 9.0.0
+- **knex**: Version 2.4.2
+- **openai**: Version 3.3.0
+- **openai-api**: Version 1.3.1
+- **sequelize**: Version 6.32.1
+- **sqlite3**: Version 5.1.6
 
-- **Tailwind CSS:** A utility-first CSS framework that aids in creating responsive and modern user interfaces.
-
-- **SQLite:** A lightweight and efficient database management system used for storing project data and user interactions.
-
-- **AJAX:** Asynchronous JavaScript and XML is used to create seamless and interactive web interactions, enabling real-time updates without the need for full page refreshes.
-
-- **Git:** A version control system that facilitates collaboration and tracking of code changes throughout the development process.
-
-- **Gitlab:** A platform for hosting and sharing code repositories, enabling efficient collaboration among developers.
-
-These technologies work in harmony to create a user-friendly, interactive, and efficient platform for brainstorming, project planning, and execution. Their combination ensures that Agile AI delivers a seamless experience across both desktop and mobile devices.
-
+These technologies and packages work together to provide a robust and feature-packed environment for building and running the project. Whether it's the frontend Angular components or the backend server logic, each technology plays a crucial role in delivering a high-quality application. Make sure to refer to their respective documentation for more details on how to leverage their capabilities effectively.
 
 ## Contributing
 
