@@ -152,53 +152,55 @@ Enjoy the enriching Agile AI experience and watch your ideas transform into stra
 
 ## Technologies
 
-This project utilizes a variety of technologies and npm packages to ensure efficient development, feature-rich functionality, and a seamless user experience. Below is a list of key technologies and npm packages that are integral to the project's architecture:
+This project leverages a comprehensive range of technologies and npm packages to ensure optimal functionality and a seamless user experience. Here's a breakdown of the key technologies and npm packages integral to the project's architecture:
 
-### Angular (Frontend)
-- **@angular/animations**: Version 16.1.0
-- **@angular/cdk**: Version 16.1.1
-- **@angular/common**: Version 16.1.0
-- **@angular/compiler**: Version 16.1.0
-- **@angular/core**: Version 16.1.0
-- **@angular/forms**: Version 16.1.0
-- **@angular/material**: Version 16.1.1
-- **@angular/platform-browser**: Version 16.1.0
-- **@angular/platform-browser-dynamic**: Version 16.1.0
-- **@angular/router**: Version 16.1.0
-- **ngx-markdown**: Version 16.0.0
-- **rxjs**: Version ~7.8.0
-- **tslib**: Version 2.3.0
-- **zone.js**: Version ~0.13.0
+### Frontend Technologies (Angular)
 
-### Angular Development Tools (Dev Dependencies)
-- **@angular-devkit/build-angular**: Version 16.1.0
-- **@angular/cli**: Version ~16.1.0
-- **@angular/compiler-cli**: Version 16.1.0
-- **@types/jasmine**: Version ~4.3.0
-- **concurrently**: Version 8.2.0
-- **jasmine-core**: Version ~4.6.0
-- **karma**: Version ~6.4.0
-- **karma-chrome-launcher**: Version ~3.2.0
-- **karma-coverage**: Version ~2.2.0
-- **karma-jasmine**: Version ~5.1.0
-- **karma-jasmine-html-reporter**: Version ~2.1.0
-- **typescript**: Version ~5.1.3
+- **@angular/animations**: v16.1.0
+- **@angular/cdk**: v16.1.1
+- **@angular/common**: v16.1.0
+- **@angular/compiler**: v16.1.0
+- **@angular/core**: v16.1.0
+- **@angular/forms**: v16.1.0
+- **@angular/material**: v16.1.1
+- **@angular/platform-browser**: v16.1.0
+- **@angular/platform-browser-dynamic**: v16.1.0
+- **@angular/router**: v16.1.0
+- **ngx-markdown**: v16.0.0
+- **rxjs**: v7.8.0
+- **tslib**: v2.3.0
+- **zone.js**: v0.13.0
+
+### Frontend Development Tools (Dev Dependencies)
+
+- **@angular-devkit/build-angular**: v16.1.0
+- **@angular/cli**: v16.1.0
+- **@angular/compiler-cli**: v16.1.0
+- **@types/jasmine**: v4.3.0
+- **concurrently**: v8.2.0
+- **jasmine-core**: v4.6.0
+- **karma**: v6.4.0
+- **karma-chrome-launcher**: v3.2.0
+- **karma-coverage**: v2.2.0
+- **karma-jasmine**: v5.1.0
+- **karma-jasmine-html-reporter**: v2.1.0
+- **typescript**: v5.1.3
 
 ### Backend Technologies
-- **axios**: Version 1.4.0
-- **bcrypt**: Version 5.1.0
-- **cors**: Version 2.8.5
-- **dotenv**: Version 16.3.1
-- **express**: Version 4.18.2
-- **jsonwebtoken**: Version 9.0.0
-- **knex**: Version 2.4.2
-- **openai**: Version 3.3.0
-- **openai-api**: Version 1.3.1
-- **sequelize**: Version 6.32.1
-- **sqlite3**: Version 5.1.6
 
-These technologies and packages work together to provide a robust and feature-packed environment for building and running the project. Whether it's the frontend Angular components or the backend server logic, each technology plays a crucial role in delivering a high-quality application. Make sure to refer to their respective documentation for more details on how to leverage their capabilities effectively.
+- **axios**: v1.4.0
+- **bcrypt**: v5.1.0
+- **cors**: v2.8.5
+- **dotenv**: v16.3.1
+- **express**: v4.18.2
+- **jsonwebtoken**: v9.0.0
+- **knex**: v2.4.2
+- **openai**: v3.3.0
+- **openai-api**: v1.3.1
+- **sequelize**: v6.32.1
+- **sqlite3**: v5.1.6
 
+These technologies and packages combine harmoniously to create a robust development environment. Whether it's the frontend Angular components, backend server logic, or development tools, each component plays a pivotal role in delivering a high-quality application. To learn more about how to utilize these technologies effectively, consult their respective documentation.
 ## Contributing
 
 Please review [Contributing](CONTRIBUTING.md)
