@@ -72,7 +72,6 @@ Discover the capabilities that Agile AI - Project Outline Streamlining brings to
 
 - **Regular Updates**: The project is actively maintained, with updates and improvements released regularly.
 
-Feel free to modify or further refine the feature descriptions to accurately represent your project's offerings.
 
 ## Installation
 
