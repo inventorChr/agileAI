@@ -1,8 +1,8 @@
 .idea
 
-/agileai/.angular/
-/agileai/.vscode/
-/agileai/node_modules/
+/app/.angular/
+/app/.vscode/
+/app/node_modules/
 
 /server/node_modules/
 /server/.env
