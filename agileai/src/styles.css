@@ -1,0 +1,191 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes color-change {
+  0% {
+    color: #f94144;
+  }
+  /* Starting color */
+  50% {
+    color: #f9c74f;
+  }
+  /* Middle color */
+  100% {
+    color: #90be6d;
+  }
+  /* Ending color */
+}
+.animate-bounce-color-change {
+  animation: color-change 3s infinite;
+}
+
+/* Headers */
+#project-outline-div h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  color: #333;
+}
+
+#project-outline-div h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 2.5rem;
+}
+
+#project-outline-div h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 2rem;
+}
+
+#project-outline-div h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+
+/* Paragraphs */
+#project-outline-div p {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: normal;
+  font-size: 0.9rem;
+}
+
+
+
+/* Ordered and Unordered Lists */
+#project-outline-div ol,
+#project-outline-div ul {
+  padding-left: 1rem;
+  margin-bottom: 1.5rem; /* Adjust the margin as per your preference */
+}
+
+/* List Items */
+#project-outline-div li {
+  margin-top: 0.5rem;
+}
+
+/* List Styles */
+#project-outline-div ol {
+  list-style-type: decimal;
+}
+
+#project-outline-div ul {
+  list-style-type: disc;
+}
+
+/* Nested Levels for Ordered Lists */
+#project-outline-div ol ol {
+  list-style-type: lower-alpha;
+}
+
+#project-outline-div ol ol ol {
+  list-style-type: lower-roman;
+}
+
+/* Nested Levels for Unordered Lists */
+#project-outline-div ul ul {
+  list-style-type: circle;
+}
+
+#project-outline-div ul ul ul {
+  list-style-type: square;
+}
+#project-plan-div h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  color: #333;
+}
+
+#project-plan-div h2 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  color: #333;
+}
+
+#project-plan-div h3 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  color: #333;
+}
+
+#project-plan-div ol {
+  list-style-type: decimal;
+  font-size: 0.9rem;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+#project-plan-div ul {
+  list-style-type: disc;
+  font-size: 0.9rem;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+#project-plan-div ul li {
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-weight: normal;
+  font-size: 0.9rem;
+  padding-left: 1rem;
+}
+
+#project-plan-div ul li:last-child {
+  margin-bottom: 0;
+}
+
+#project-plan-div ul li a {
+  color: #333;
+}
+
+#project-plan-div p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: normal;
+  font-size: 0.9rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

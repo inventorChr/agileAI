@@ -1,0 +1,104 @@
+<body class="font-sans antialiased bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+<header class="w-full bg-blue-500 shadow-md">
+  <div class="container mx-auto px-4 py-6">
+    <h1 id="agileai" class=" text-4xl font-bold text-white text-center animate-bounce-color-change">Agile AI</h1>
+  </div>
+</header>
+
+<main class="flex-1">
+  <div class="container mx-auto px-4 py-8">
+    <section class="mb-10 text-center">
+      <h2 class="text-3xl font-semibold text-gray-800 mb-4">Streamline Your Business Ideas.</h2>
+      <p class="text-lg text-gray-600">Decrease Your Time to Market!</p>
+    </section>
+
+    <section class="mb-10 text-left">
+      <div *ngIf="alertMessage" class="text-center" id="alert">{{ alertMessage }}</div>
+      <div id="input">
+        <form>
+          <input [(ngModel)]="idea" class="w-full px-4 my-2 py-2 border border-gray-300 rounded-lg border-l border-gray-300 text-gray-700 focus:outline-none focus:border-gray-300 focus:border-gray-300 transition ease-in-out duration-150" id="idea-input" name="idea"
+                 placeholder="Enter your project Idea:"
+                 type="text">
+          <input [(ngModel)]="additionalInfo" class="w-full px-4 py-2 border border-gray-300 rounded-lg border-l border-gray-300 text-gray-700 focus:outline-none focus:border-gray-300 focus:border-gray-300 transition ease-in-out duration-150" id="info-input" name="additionalInfo"
+                 placeholder="Additional information:"
+                 type="text">
+          <button (click)="submitIdea()" class="px-4 py-2 mt-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
+            Submit
+          </button>
+        </form>
+
+      </div>
+    </section>
+
+
+    <section class="bg-gray-200 shadow rounded-lg p-8 mb-6">
+      <ul class="flex border-b">
+        <li class="-mb-px mr-2">
+          <button
+            (click)="activeTab = 'project-outline'"
+            class="py-2 px-4 bg-white inline-block rounded-t-lg border-l border-t border-r border-gray-300 text-gray-700 font-semibold hover:text-gray-900 focus:outline-none">Project Outline
+          </button>
+        </li>
+        <li class="-mb-px mr-2">
+          <button
+            (click)="activeTab = 'project-plan'"
+            class="py-2 px-4 bg-white inline-block rounded-t-lg border-l border-t border-r border-gray-300 text-gray-700 font-semibold hover:text-gray-900 focus:outline-none">Project Plan
+          </button>
+        </li>
+<!--        <li class="-mb-px mr-2">-->
+<!--          <button-->
+<!--            (click)="activeTab = 'project-settings'"-->
+<!--            class="py-2 px-4 bg-white inline-block rounded-t-lg border-l border-t border-r border-gray-300 text-gray-700 font-semibold hover:text-gray-900 focus:outline-none">Settings-->
+<!--          </button>-->
+      </ul>
+
+      <div class="w-full p-4 border border-t-0 rounded-b-lg border-gray-300 overflow-auto"
+           id="project-outline-div"
+           *ngIf="activeTab === 'project-outline'"
+      >
+        <div class="flex flex-col space-y-4">
+          <markdown id="project_title-div" [data]="title"></markdown>
+          <markdown id="project_summary-div" [data]="summary"></markdown>
+          <markdown id="project_business_case-div" [data]="business_case"></markdown>
+        </div>
+      </div>
+      <div class="w-full p-4 border border-t-0 rounded-b-lg border-gray-300 overflow-auto"
+           id="project-plan-div"
+           *ngIf="activeTab === 'project-plan'"
+      >
+        <div class="container mx-auto">
+          <markdown id="goals-div" [data]="goal"></markdown>
+          <markdown id="objectives-div" [data]="objective"></markdown>
+          <markdown id="scope_deliverables-div" [data]="scope_deliverables"></markdown>
+          <markdown id="work_breakdown_structure-div" [data]="work_breakdown_structure"></markdown>
+          <markdown id="timeline_milestones-div" [data]="timeline_milestones"></markdown>
+          <markdown id="budget_resources-div" [data]="budget_resources"></markdown>
+          <markdown id="risk_assumptions-div" [data]="risk_assumption"></markdown>
+        </div>
+      </div>
+      <div class="w-full p-4 border border-t-0 rounded-b-lg border-gray-300 overflow-auto"
+           id="project-settings-div"
+           *ngIf="activeTab === 'project-settings'"
+      >
+<!--        <div class="container mx-auto">-->
+<!--          <form>-->
+<!--            <div class="form-group">-->
+<!--              <input [(ngModel)]="openai_key" class="w-full px-4 py-2 border border-gray-300 rounded-lg border-l border-gray-300 text-gray-700 focus:outline-none focus:border-gray-300 focus:border-gray-300 transition ease-in-out duration-150" id="key-input" name="openai_key"-->
+<!--                     placeholder="OPEN AI KEY"-->
+<!--                     type="text">-->
+<!--              <button (click)="saveSettings()" class="px-4 py-2 mt-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">-->
+<!--                Submit-->
+<!--              </button>-->
+<!--            </div>-->
+<!--          </form>-->
+
+<!--        </div>-->
+      </div>
+    </section>
+  </div>
+</main>
+<footer class="bg-blue-500 shadow-md">
+  <div class="container mx-auto px-4 py-6">
+    <p class="text-white">© 2023 Agile AI</p>
+  </div>
+</footer>
