@@ -69,8 +69,6 @@ Discover the capabilities that Agile AI - Project Outline Streamlining brings to
 
 - **MIT License**: The project is open-source and licensed under the MIT License, allowing for both personal and commercial use.
 
-- **Regular Updates**: The project is actively maintained, with updates and improvements released regularly.
-
 
 ## Installation
 
