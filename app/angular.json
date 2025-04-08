@@ -61,18 +61,21 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "agileai:build:production"
+              "buildTarget": "agileai:build:production"
             },
             "development": {
-              "browserTarget": "agileai:build:development"
+              "buildTarget": "agileai:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "buildTarget": "agileai:build"
+          }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "agileai:build"
+            "buildTarget": "agileai:build"
           }
         },
         "test": {
