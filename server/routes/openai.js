@@ -712,11 +712,30 @@ async function goalsIteration(project) {
     if (!project) {
         throw new Error('project is required.');
     }
-    let prompt = `
-        1. Review the Project: ${project.project_outline_charter}.
-        2. Your **GOAL** is to generate a list of high level goals encompassing the project.
-        3. Generated text shall only be the high level goals of the project, formatted ## high level goals.
-        4. Generated text must be formatted in MARKDOWN.`;
+    const prompt = `
+    Review the following project charter: ${project.project_outline_charter}
+
+    Your task:
+    1. Generate two levels of goals based on the charter:
+        - **High-Level Goals**: Strategic, long-term intentions that define the overall vision and purpose of the project.
+        - **Supporting Goals**: Tactical, feature-level or implementation goals that support achieving the high-level ones.
+    2. Do NOT invent or assume details not clearly stated or logically implied in the charter.
+    3. If certain goals cannot be determined, omit them rather than guessing.
+    4. Use a clear, structured format suitable for planning documents.
+    5. Format the output in Markdown as follows:
+
+    ## High-Level Goals
+        - <strategic goal 1>
+        - <strategic goal 2>
+
+    ## Supporting Goals
+        - <tactical goal 1>
+        - <tactical goal 2>
+
+    Only return the goals section in Markdown.
+    `;
+
+
 
     const messages = [
         {role: 'system', content: prompt},
@@ -742,7 +761,12 @@ async function goalsIteration(project) {
         const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Goals ----------------------------');
+        console.log('Full response from OpenAI:');
         console.log(responseContent);
+        console.log('Response length:', responseContent.length);
+        console.log('Contains High-Level Goals:', responseContent.includes('## High-Level Goals'));
+        console.log('Contains Supporting Goals:', responseContent.includes('## Supporting Goals'));
+        console.log('----------------------------------------');
 
         const updatedProject = await project.update(
             {project_plan_goals: responseContent},

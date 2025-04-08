@@ -294,6 +294,8 @@ export class HomeComponent implements OnInit {
             .replace(/\r\n/g, '\n')  // Normalize line endings
             .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
             .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .replace(/^##\s*High-Level Goals\s*$/gm, '## High-Level Goals')  // Preserve High-Level Goals header
+            .replace(/^##\s*Supporting Goals\s*$/gm, '## Supporting Goals')  // Preserve Supporting Goals header
             .trim();
           this.alertMessage = 'Generating project goals...';
           this.cdr.detectChanges();
@@ -692,7 +694,15 @@ export class HomeComponent implements OnInit {
   }
 
   getCleanGoal(): string {
-    return this.goal.replace(/^##\s*Goal:\s*/, '');
+    if (!this.goal) return '';
+    return this.goal
+      .replace(/^[#\s]*Goals:?\s*/i, '')          // Remove "Goals:" and any #
+      .replace(/^['"`]*|['"`]*$/g, '')           // Remove quotes/backticks
+      .replace(/^markdown\s*/i, '')              // Remove 'markdown' text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')    // Remove backticks
+      .replace(/^##\s*High-Level Goals\s*$/gm, '## High-Level Goals')  // Preserve High-Level Goals header
+      .replace(/^##\s*Supporting Goals\s*$/gm, '## Supporting Goals')  // Preserve Supporting Goals header
+      .trim();                                   // Clean up whitespace
   }
 
   getCleanObjective(): string {
