@@ -638,7 +638,10 @@ export class HomeComponent implements OnInit {
   }
 
   getCleanSummary(): string {
-    return this.summary.replace(/^##\s*Summary:\s*/, '');
+    if (!this.summary) return '';
+    return this.summary
+      .replace(/^[#\s]*Summary:?\s*/i, '')  // Remove "Summary:" and any #
+      .trim();                              // Clean up whitespace
   }
 
   getCleanBusinessCase(): string {
