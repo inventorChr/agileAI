@@ -1112,11 +1112,13 @@ async function timelineMilestonesIteration(project) {
     Review the following project charter: ${project.project_outline_charter}
 
     Your task:
-    1. Generate a project timeline and list of major milestones based strictly on the content of the charter.
-    2. If no dates or durations are explicitly provided, do NOT invent them — use relative phases instead (e.g., "Phase 1", "Initial Planning").
-    3. The timeline should provide a logical sequence of phases or events.
-    4. Milestones should be distinct, measurable markers of progress.
-    5. Format the output in Markdown as follows:
+    1. Generate a complete project timeline and a full list of major milestones based strictly on the content of the charter.
+    2. If no specific dates or durations are provided, do NOT invent them — instead, use relative labels such as "Phase 1", "Initial Planning", etc.
+    3. The timeline must reflect a logical and complete sequence of phases or major events in the project.
+    4. Milestones should be distinct, measurable progress indicators — only include what is explicitly mentioned or logically implied.
+    5. Ensure the response covers the entire project lifecycle. Do not stop mid-way or leave any major phase incomplete.
+    6. If output is long, continue until the full response is returned.
+    7. Format the response in Markdown using the following structure:
 
     ## Timeline
     - Phase 1: <description>
@@ -1128,8 +1130,9 @@ async function timelineMilestonesIteration(project) {
     - <milestone 2>
     - <milestone 3>
 
-    Only return the timeline and milestone sections in Markdown.
+    Only return the full timeline and milestone sections in Markdown.
     `;
+
 
     const messages = [
         {role: 'system', content: prompt},
