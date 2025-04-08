@@ -6,3 +6,4 @@
 
 /server/node_modules/
 /server/.env
+/server/data/database.sqlite
