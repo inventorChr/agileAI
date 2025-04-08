@@ -240,12 +240,14 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getSummary(this.projectId.toString())))
       .subscribe({
         next: (response: SummaryResponse) => {
-          this.summary = response.summary.replace(/\n/g, '  \n');
+          this.summary = response.summary
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .trim();
           this.alertMessage = "Generating project's summary...";
           this.cdr.detectChanges();
-          // Unsubscribe if data received
           if (this.summary) {
-            // Check if subscription is defined before trying to unsubscribe
             if (this.subscription) {
               this.subscription.unsubscribe();
               this.getBusinessCase();
@@ -255,7 +257,7 @@ export class HomeComponent implements OnInit {
         error: (error) => {
           console.error(error);
         }
-      })
+      });
   }
 
   getBusinessCase() {
@@ -263,14 +265,13 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getBusinessCase(this.projectId.toString())))
       .subscribe({
         next: (response: BusinessCaseResponse) => {
-          // Format the business case content with proper line breaks
           this.business_case = response.businessCase
-            .replace(/\n/g, '\n\n')  // Double line breaks for paragraphs
-            .replace(/\n\n\n+/g, '\n\n')  // Remove excessive line breaks
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
             .trim();
           this.alertMessage = 'Generating the business case...';
           this.cdr.detectChanges();
-          // Unsubscribe if data received
           if (this.business_case) {
             if (this.subscription) {
               this.subscription.unsubscribe();
@@ -289,12 +290,14 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getGoal(this.projectId.toString())))
       .subscribe({
         next: (response: GoalResponse) => {
-          this.goal = response.goal.replace(/\n/g, '  \n');
+          this.goal = response.goal
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .trim();
           this.alertMessage = 'Generating project goals...';
           this.cdr.detectChanges();
-          // Unsubscribe if data received
           if (this.goal) {
-            // Check if subscription is defined before trying to unsubscribe
             if (this.subscription) {
               this.subscription.unsubscribe();
               this.getObjective();
@@ -304,7 +307,7 @@ export class HomeComponent implements OnInit {
         error: (error) => {
           console.error(error);
         }
-      })
+      });
   }
 
   getObjective() {
@@ -312,12 +315,15 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getObjective(this.projectId.toString())))
       .subscribe({
         next: (response: ObjectiveResponse) => {
-          this.objective = response.objective.replace(/\n/g, '  \n');
+          // Preserve markdown formatting while ensuring proper line breaks
+          this.objective = response.objective
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .trim();
           this.alertMessage = 'Generating project objectives...';
           this.cdr.detectChanges();
-          // Unsubscribe if data received
           if (this.objective) {
-            // Check if subscription is defined before trying to unsubscribe
             if (this.subscription) {
               this.subscription.unsubscribe();
               this.getScopeDeliverables();
@@ -327,7 +333,7 @@ export class HomeComponent implements OnInit {
         error: (error) => {
           console.error(error);
         }
-      })
+      });
   }
 
   getScopeDeliverables() {
@@ -335,7 +341,11 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getScopeDeliverables(this.projectId.toString())))
       .subscribe({
         next: (response: ScopeDeliverablesResponse) => {
-          this.scope_deliverables = response.scopeDeliverables.replace(/\n/g, '  \n');
+          this.scope_deliverables = response.scopeDeliverables
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .trim();
           this.alertMessage = 'Generating project scope and deliverables...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -358,7 +368,11 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getWorkBreakdownStructure(this.projectId.toString())))
       .subscribe({
         next: (response: WorkBreakdownStructureResponse) => {
-          this.work_breakdown_structure = response.workBreakdownStructure.replace(/\n/g, '  \n');
+          this.work_breakdown_structure = response.workBreakdownStructure
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .trim();
           this.alertMessage = 'Generating project work breakdown structure...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -382,7 +396,11 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getTimelineMilestones(this.projectId.toString())))
       .subscribe({
         next: (response: TimelineMilestonesResponse) => {
-          this.timeline_milestones = response.timelineMilestones.replace(/\n/g, '  \n');
+          this.timeline_milestones = response.timelineMilestones
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .trim();
           this.alertMessage = 'Generating project timeline and milestones...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -405,7 +423,11 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getBudgetResource(this.projectId.toString())))
       .subscribe({
         next: (response: BudgetResourceResponse) => {
-          this.budget_resources = response.budgetResource.replace(/\n/g, '  \n');
+          this.budget_resources = response.budgetResource
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .trim();
           this.alertMessage = 'Generating budget and resources...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -428,7 +450,11 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getRiskAssumption(this.projectId.toString())))
       .subscribe({
         next: (response: RiskAssumptionResponse) => {
-          this.risk_assumption = response.riskAssumption.replace(/\n/g, '  \n');
+          this.risk_assumption = response.riskAssumption
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .trim();
           this.alertMessage = "Generating project risk and assumption's...";
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -451,7 +477,11 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getTask(this.projectId.toString())))
       .subscribe({
         next: (response: TaskResponse) => {
-          this.task = response.task.replace(/\n/g, '  \n');
+          this.task = response.task
+            .replace(/\r\n/g, '\n')  // Normalize line endings
+            .replace(/^\s*[-*]\s/gm, '* ')  // Normalize bullet points
+            .replace(/^\s*(\d+)\.\s/gm, '$1. ')  // Normalize numbered lists
+            .trim();
           this.alertMessage = "Generating task breakdown...";
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -662,7 +692,13 @@ export class HomeComponent implements OnInit {
   }
 
   getCleanObjective(): string {
-    return this.objective.replace(/^##\s*Objective:\s*/, '');
+    if (!this.objective) return '';
+    return this.objective
+      .replace(/^[#\s]*Objectives:?\s*/i, '')     // Remove "Objectives:" and any #
+      .replace(/^['"`]*|['"`]*$/g, '')            // Remove quotes/backticks
+      .replace(/^markdown\s*/i, '')               // Remove 'markdown' text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')     // Remove backticks
+      .trim();                                    // Clean up whitespace
   }
 
   getCleanScopeDeliverables(): string {

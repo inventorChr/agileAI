@@ -143,6 +143,7 @@
 .markdown-content {
   background-color: white;
   border-radius: 0.375rem;
+  padding: 1rem;
 }
 
 .markdown-content ::ng-deep {
@@ -164,8 +165,85 @@
   color: #1e293b;
 }
 
-.markdown-content ::ng-deep h1:first-child {
-  margin-top: 0;
+.markdown-content ::ng-deep h1 { font-size: 2rem; }
+.markdown-content ::ng-deep h2 { font-size: 1.75rem; }
+.markdown-content ::ng-deep h3 { font-size: 1.5rem; }
+.markdown-content ::ng-deep h4 { font-size: 1.25rem; }
+.markdown-content ::ng-deep h5 { font-size: 1.1rem; }
+.markdown-content ::ng-deep h6 { font-size: 1rem; }
+
+.markdown-content ::ng-deep p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.markdown-content ::ng-deep ul,
+.markdown-content ::ng-deep ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.markdown-content ::ng-deep ul {
+  list-style-type: disc;
+}
+
+.markdown-content ::ng-deep ol {
+  list-style-type: decimal;
+}
+
+.markdown-content ::ng-deep li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content ::ng-deep code {
+  background-color: #f1f5f9;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content ::ng-deep pre {
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.markdown-content ::ng-deep pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.markdown-content ::ng-deep blockquote {
+  border-left: 4px solid #e2e8f0;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #64748b;
+}
+
+.markdown-content ::ng-deep table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.markdown-content ::ng-deep th,
+.markdown-content ::ng-deep td {
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.markdown-content ::ng-deep th {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
+
+.markdown-content ::ng-deep tr:nth-child(even) {
+  background-color: #f8fafc;
 }
 
 /* Edit form styling */
