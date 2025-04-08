@@ -18,6 +18,9 @@ import { AppRoutingModule } from './app-routing.module';
 @NgModule({
   declarations: [
     // LoginComponent
+  
+    // HeaderComponent,
+    // FooterComponent
   ],
   imports: [
     BrowserModule,
