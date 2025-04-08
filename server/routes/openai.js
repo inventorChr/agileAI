@@ -361,15 +361,23 @@ async function processIdea(project) {
 
     // Define the prompt
     const prompt = `
-    You are an AI assistant for project planning, we are beginning the initiation phase of project planning for ${project.project_idea}, ${project.project_additional_info}.
-    Engage in a discussion to flesh out the user's idea by asking insightful questions. You must follow these rules in order to complete phase 1:
-    Develop a rough draft of:
-    1 Project Title:
-    2 Project Charter:
-    3 Project Summary:
-    4 Business Case:
-    The generated text should be in plain text.
+    You are an elite AI project strategist.
+
+    The user is initiating a new idea: "${project.project_idea}"  
+    Additional context: "${project.project_additional_info}"
+
+    Your task:
+    1. Begin Phase 1 by guiding the user through high-level conceptual questions to help shape and sharpen their idea.
+    2. Then, generate thoughtful rough drafts for the following artifacts:
+        - Project Title
+        - Project Charter
+        - Project Summary
+        - Business Case
+    3. Each artifact must be original, strategic, and practical — helping the user think deeply and creatively.
+    4. Do NOT fabricate specific details such as dates, budgets, team members, or approval status unless provided.
+    5. Output must be plain text, clearly separated, and ready for refinement in subsequent phases.
     `;
+
 
     // Construct the assistant's messages
     const messages = [
@@ -425,11 +433,17 @@ async function charterIteration(responseContent, project) {
     }
 
     const prompt = `
-    1. Review the discussion: ${project.project_conversation}.
-    2. Today is: ${formattedDate}.
-    3. From the discussion, create a thorough charter of the project.
-    4. Generated text should be in Markdown.
+    Based on the following discussion: "${project.project_conversation}"
+    Date: ${formattedDate}
+
+    Your task:
+    1. Generate a complete project charter that defines the project's vision, purpose, scope, and strategic value.
+    2. Do NOT invent or assume details not clearly stated (e.g., dates, approvals, team roles, budgets).
+    3. If any section cannot be determined from the input, omit it entirely.
+    4. The tone must be visionary and strategic, yet grounded and actionable — suitable for use in early-stage planning.
+    5. Format the output in clear, structured Markdown with appropriate section headings.
     `;
+
 
     // Construct the assistant's messages
     const messages = [
@@ -491,10 +505,16 @@ async function titleIteration(project) {
     }
 
     const prompt = `
-    1. Review the following discussion: ${project.project_outline_charter}.
-    2. Your **GOAL** is to parse the data for the keywords Project Title.
-    3. Generated text shall only be the title of the project, formatted # Project Title: \n title.
-    4. Response should be in Markdown.
+    Review the following project charter: ${project.project_outline_charter}
+
+    Your task:
+    1. Extract or generate a project title that is clear, strategically aligned, and sparks interest.
+    2. The title should be visionary yet practical — suitable for attracting attention while communicating purpose.
+    3. Format the output exactly as:
+        # Project Title:
+        <your title here>
+
+    Only return the title block in Markdown.
     `;
 
     const messages = [
@@ -551,11 +571,22 @@ async function summaryIteration(project) {
     }
 
     const prompt = `
-    1. Review the following discussion: ${project.project_outline_charter}.
-    2. Parse data for the keyword Summary.
-    3. Generated text shall only be the summary of the project, formatted ## Summary.
-    4. Response should be in Markdown.
+    Review the following project charter: ${project.project_outline_charter}
+    Official Project Title: ${project.project_outline_title}
+
+    Your task:
+    1. Write a clear, strategic summary that captures the project's vision, purpose, and value.
+    2. Do NOT invent or assume any information (e.g., names, dates, roles, budgets, approvals, or timelines) unless explicitly stated in the charter.
+    3. If such details are missing, omit them entirely.
+    4. The tone should inspire confidence and clarity — practical, grounded, and professional.
+    5. Use the official project title when referring to the project.
+    6. Format the output as:
+        ## Summary
+        <summary text>
+
+    Only return the summary in Markdown.
     `;
+
 
     const messages = [
         {role: 'system', content: prompt},
@@ -612,12 +643,22 @@ async function businessCaseIteration(project) {
     }
 
     const prompt = `
-    1. Review the following discussion: ${project.project_outline_charter}.
-    2. Parse data for the keyword Business Case.
-    3. Generated text shall only be the business case of the project, formatted ## Business Case.
-    4. If the business case should be revised, revise and generate a new business case.
-    5. Response should be in Markdown.
+    Review the following project charter: ${project.project_outline_charter}
+    Official Project Title: ${project.project_outline_title}
+
+    Your task:
+    1. Extract or generate a compelling Business Case based strictly on the content provided.
+    2. Do NOT invent or assume any details (e.g. dates, team roles, budgets, or approvals) unless explicitly included in the charter.
+    3. If the existing Business Case is weak, vague, or missing, create a revised version that clearly communicates the project's strategic justification and value.
+    4. The tone should be strategic and persuasive, but grounded in factual input.
+    5. Use the official project title when referring to the project.
+    6. Format the output as:
+        ## Business Case
+        <business case content>
+
+    Only return the business case section in Markdown.
     `;
+
 
     const messages = [
         {role: 'system', content: prompt},
