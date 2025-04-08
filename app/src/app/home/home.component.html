@@ -192,7 +192,7 @@
                   <button (click)="saveEditing('work_breakdown_structure')">Save</button>
                 </div>
               </div>
-              <div *ngIf="!isEditingWorkBreakdownStructure" class="markdown-content">
+              <div *ngIf="!isEditingWorkBreakdownStructure" class="markdown-content work-breakdown-structure">
                 <markdown [data]="getCleanWorkBreakdownStructure()"></markdown>
               </div>
             </div>

@@ -216,5 +216,42 @@
   margin-top: 0.75rem;
 }
 
+/* Work Breakdown Structure Specific Styles */
+#project-plan-div .work-breakdown-structure > ul {
+  list-style-type: none; /* Remove default bullets for the outer list */
+  padding-left: 0;
+}
+
+#project-plan-div .work-breakdown-structure > ul > li {
+  margin-top: 1rem; /* Add space between phases */
+  font-weight: 600; /* Make phase titles bold */
+  color: #333;
+}
+
+#project-plan-div .work-breakdown-structure > ul > li::before {
+  /* Optional: Add a custom marker for phases if needed */
+  /* content: '\25B6'; /* Example: Right-pointing triangle */
+  /* margin-right: 0.5em; */
+}
+
+#project-plan-div .work-breakdown-structure ul ul {
+  list-style-type: disc; /* Standard bullets for tasks */
+  margin-left: 1.5rem;  /* Indent tasks */
+  margin-top: 0.5rem; /* Space between phase title and first task */
+  padding-left: 1rem; /* Add padding for the bullets */
+}
+
+#project-plan-div .work-breakdown-structure ul ul li {
+  margin: 0.3rem 0; /* Spacing between tasks */
+  line-height: 1.5;
+  color: #444;
+  font-weight: normal; /* Ensure tasks are not bold */
+}
+
+#project-plan-div .work-breakdown-structure ul ul ul {
+  list-style-type: circle; /* Different bullets for sub-sub-tasks */
+  margin-left: 1.5rem; /* Further indent sub-sub-tasks */
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

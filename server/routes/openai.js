@@ -1040,10 +1040,12 @@ async function workBreakdownStructureIteration(project) {
     Review the following project charter: ${project.project_outline_charter}
 
     Your task:
-    1. Generate a clear and hierarchical **Work Breakdown Structure (WBS)** based strictly on the content of the charter.
+    1. Generate a complete and hierarchical **Work Breakdown Structure (WBS)** based strictly on the content of the charter.
     2. Break the project into logical phases, components, or work packages where possible.
-    3. Only include tasks and phases that are explicitly described or logically implied in the charter — do NOT fabricate.
-    4. Use a Markdown nested bullet format like this:
+    3. Do NOT fabricate — only include items explicitly described or clearly implied.
+    4. Ensure the full structure is generated from start to finish. Do not stop mid-phase or mid-task list.
+    5. If the content is too long, continue outputting until the full WBS is complete.
+    6. Use a Markdown nested bullet format like this:
 
     ## Work Breakdown Structure
     - Phase 1: <name>
@@ -1052,8 +1054,9 @@ async function workBreakdownStructureIteration(project) {
     - Phase 2: <name>
         - Task 2.1: <subtask>
 
-    Only return the Work Breakdown Structure section in Markdown.
+    Only return the full Work Breakdown Structure section in Markdown.
     `;
+
 
 
     const messages = [

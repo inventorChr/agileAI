@@ -742,12 +742,40 @@ export class HomeComponent implements OnInit {
 
   getCleanWorkBreakdownStructure(): string {
     if (!this.work_breakdown_structure) return '';
-    return this.work_breakdown_structure
-      .replace(/^[#\s]*Work Breakdown Structure:?\s*/i, '')  // Remove "Work Breakdown Structure:" and any #
-      .replace(/^['"`]*|['"`]*$/g, '')                       // Remove quotes/backticks
-      .replace(/^markdown\s*/i, '')                          // Remove 'markdown' text
-      .replace(/^\s*```\s*|\s*```\s*$/g, '')                // Remove backticks
-      .trim();                                               // Clean up whitespace
+
+    let lines = this.work_breakdown_structure
+      .replace(/^[#\s]*Work Breakdown Structure:?\s*/i, '')
+      .replace(/^['"`]*|['"`]*$/g, '')
+      .replace(/^markdown\s*/i, '')
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')
+      .trim()
+      .split('\n');
+
+    let formattedLines: string[] = [];
+    let inSublist = false;
+
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) continue; // Skip empty lines
+
+      // Check if it's a phase line (e.g., "Phase 1: ..." or "* Phase 1: ...")
+      if (line.match(/^Phase\s+\d+:|^-?\*?\s*Phase\s+\d+:/i)) {
+        // Format as a top-level list item
+        formattedLines.push(`* ${line.replace(/^[-*]?\s*/, '').replace(/:$/, '')}`);
+        inSublist = true; // Subsequent items should be sub-items
+      } else if (inSublist && line.match(/^[-*]/)) {
+        // Format as a sub-list item (indented)
+        formattedLines.push(`  * ${line.replace(/^[-*]?\s*/, '')}`);
+      } else if (inSublist) {
+        // Assume non-bulleted lines under a phase are also sub-items
+        formattedLines.push(`  * ${line}`);
+      } else {
+         // Treat as a top-level item if not under a phase yet
+         formattedLines.push(`* ${line.replace(/^[-*]?\s*/, '')}`);
+      }
+    }
+
+    return formattedLines.join('\n');
   }
 
   getCleanTimelineMilestones(): string {
