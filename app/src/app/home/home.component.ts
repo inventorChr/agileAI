@@ -263,12 +263,15 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getBusinessCase(this.projectId.toString())))
       .subscribe({
         next: (response: BusinessCaseResponse) => {
-          this.business_case = response.businessCase.replace(/\n/g, '  \n');
+          // Format the business case content with proper line breaks
+          this.business_case = response.businessCase
+            .replace(/\n/g, '\n\n')  // Double line breaks for paragraphs
+            .replace(/\n\n\n+/g, '\n\n')  // Remove excessive line breaks
+            .trim();
           this.alertMessage = 'Generating the business case...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
           if (this.business_case) {
-            // Check if subscription is defined before trying to unsubscribe
             if (this.subscription) {
               this.subscription.unsubscribe();
               this.getGoal();
@@ -278,7 +281,7 @@ export class HomeComponent implements OnInit {
         error: (error) => {
           console.error(error);
         }
-      })
+      });
   }
 
   getGoal() {
@@ -645,7 +648,13 @@ export class HomeComponent implements OnInit {
   }
 
   getCleanBusinessCase(): string {
-    return this.business_case.replace(/^##\s*Business Case:\s*/, '');
+    if (!this.business_case) return '';
+    return this.business_case
+      .replace(/^[#\s]*Business Case:?\s*/i, '')  // Remove "Business Case:" and any #
+      .replace(/^['"`]*|['"`]*$/g, '')            // Remove quotes/backticks
+      .replace(/^markdown\s*/i, '')               // Remove 'markdown' text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')     // Remove backticks
+      .trim();                                    // Clean up whitespace
   }
 
   getCleanGoal(): string {
