@@ -10,14 +10,11 @@ import {
   ObjectiveResponse,
   ScopeDeliverablesResponse,
   WorkBreakdownStructureResponse,
-  StakeHolderResponse,
-  RoleResponse,
-  TaskResponse,
   TimelineMilestonesResponse,
   BudgetResourceResponse,
   RiskAssumptionResponse,
-  CharterResponse,
-  KeyResponse
+  UpdateResponse,
+  TaskResponse
 } from "../idea-service.service";
 import {ActivatedRoute} from "@angular/router";
 import {interval, Subscription, switchMap} from "rxjs";
@@ -127,10 +124,6 @@ export class HomeComponent implements OnInit {
   timeline_milestones: string = '';
   budget_resources: string = '';
   risk_assumption: string = '';
-  charter: string = '';
-
-  role: string = '';
-  stakeholder: string = '';
   task: string = '';
 
   activeTab: string = 'project-outline';
@@ -142,6 +135,32 @@ export class HomeComponent implements OnInit {
   subscription?: Subscription;
 
   pollingIntervalInSeconds = 5;
+
+  // Editing state properties
+  isEditingTitle = false;
+  isEditingSummary = false;
+  isEditingBusinessCase = false;
+  isEditingGoal = false;
+  isEditingObjective = false;
+  isEditingScopeDeliverables = false;
+  isEditingWorkBreakdownStructure = false;
+  isEditingTimelineMilestones = false;
+  isEditingBudgetResources = false;
+  isEditingRiskAssumption = false;
+  isEditingTask = false;
+
+  // Editing content properties
+  editingTitle = '';
+  editingSummary = '';
+  editingBusinessCase = '';
+  editingGoal = '';
+  editingObjective = '';
+  editingScopeDeliverables = '';
+  editingWorkBreakdownStructure = '';
+  editingTimelineMilestones = '';
+  editingBudgetResources = '';
+  editingRiskAssumption = '';
+  editingTask = '';
 
   constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef, private ideaService: IdeaService) {
     let id = this.route.snapshot.paramMap.get('id');
@@ -221,7 +240,7 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getSummary(this.projectId.toString())))
       .subscribe({
         next: (response: SummaryResponse) => {
-          this.summary = response.summary;
+          this.summary = response.summary.replace(/\n/g, '  \n');
           this.alertMessage = "Generating project's summary...";
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -236,7 +255,6 @@ export class HomeComponent implements OnInit {
         error: (error) => {
           console.error(error);
         }
-
       })
   }
 
@@ -245,35 +263,11 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getBusinessCase(this.projectId.toString())))
       .subscribe({
         next: (response: BusinessCaseResponse) => {
-          this.business_case = response.businessCase;
+          this.business_case = response.businessCase.replace(/\n/g, '  \n');
           this.alertMessage = 'Generating the business case...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
           if (this.business_case) {
-            // Check if subscription is defined before trying to unsubscribe
-            if (this.subscription) {
-              this.subscription.unsubscribe();
-              this.getCharter();
-            }
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        }
-      })
-  }
-
-  getCharter() {
-    this.subscription = interval(this.pollingIntervalInSeconds * 1000)
-      .pipe(switchMap(() => this.ideaService.getCharter(this.projectId.toString())))
-      .subscribe({
-        next: (response: CharterResponse) => {
-          this.charter = response.charter;
-          // this.alertMessage = 'Generating project charter...';
-          this.cdr.detectChanges();
-
-          // Unsubscribe if data received
-          if (this.charter) {
             // Check if subscription is defined before trying to unsubscribe
             if (this.subscription) {
               this.subscription.unsubscribe();
@@ -284,7 +278,7 @@ export class HomeComponent implements OnInit {
         error: (error) => {
           console.error(error);
         }
-      });
+      })
   }
 
   getGoal() {
@@ -292,7 +286,7 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getGoal(this.projectId.toString())))
       .subscribe({
         next: (response: GoalResponse) => {
-          this.goal = response.goal;
+          this.goal = response.goal.replace(/\n/g, '  \n');
           this.alertMessage = 'Generating project goals...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -315,7 +309,7 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getObjective(this.projectId.toString())))
       .subscribe({
         next: (response: ObjectiveResponse) => {
-          this.objective = response.objective;
+          this.objective = response.objective.replace(/\n/g, '  \n');
           this.alertMessage = 'Generating project objectives...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -338,7 +332,7 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getScopeDeliverables(this.projectId.toString())))
       .subscribe({
         next: (response: ScopeDeliverablesResponse) => {
-          this.scope_deliverables = response.scopeDeliverables;
+          this.scope_deliverables = response.scopeDeliverables.replace(/\n/g, '  \n');
           this.alertMessage = 'Generating project scope and deliverables...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -361,9 +355,7 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getWorkBreakdownStructure(this.projectId.toString())))
       .subscribe({
         next: (response: WorkBreakdownStructureResponse) => {
-          if (response.workBreakdownStructure) {
-            this.work_breakdown_structure = response.workBreakdownStructure.replace(/\n/g, '  \n');
-          }
+          this.work_breakdown_structure = response.workBreakdownStructure.replace(/\n/g, '  \n');
           this.alertMessage = 'Generating project work breakdown structure...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -387,7 +379,7 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getTimelineMilestones(this.projectId.toString())))
       .subscribe({
         next: (response: TimelineMilestonesResponse) => {
-          this.timeline_milestones = response.timelineMilestones;
+          this.timeline_milestones = response.timelineMilestones.replace(/\n/g, '  \n');
           this.alertMessage = 'Generating project timeline and milestones...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -410,7 +402,7 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getBudgetResource(this.projectId.toString())))
       .subscribe({
         next: (response: BudgetResourceResponse) => {
-          this.budget_resources = response.budgetResource;
+          this.budget_resources = response.budgetResource.replace(/\n/g, '  \n');
           this.alertMessage = 'Generating budget and resources...';
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -433,7 +425,7 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getRiskAssumption(this.projectId.toString())))
       .subscribe({
         next: (response: RiskAssumptionResponse) => {
-          this.risk_assumption = response.riskAssumption;
+          this.risk_assumption = response.riskAssumption.replace(/\n/g, '  \n');
           this.alertMessage = "Generating project risk and assumption's...";
           this.cdr.detectChanges();
           // Unsubscribe if data received
@@ -441,29 +433,7 @@ export class HomeComponent implements OnInit {
             // Check if subscription is defined before trying to unsubscribe
             if (this.subscription) {
               this.subscription.unsubscribe();
-              this.alertMessage = '';
-            }
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        }
-      })
-  }
-
-  getStakeHolder() {
-    this.subscription = interval(this.pollingIntervalInSeconds * 1000)
-      .pipe(switchMap(() => this.ideaService.getStakeHolder(this.projectId.toString())))
-      .subscribe({
-        next: (response: StakeHolderResponse) => {
-          this.stakeholder = response.stakeHolder;
-          this.alertMessage = "Generating stakeholder's for your project...";
-          this.cdr.detectChanges();
-          // Unsubscribe if data received
-          if (this.stakeholder) {
-            // Check if subscription is defined before trying to unsubscribe
-            if (this.subscription) {
-              this.subscription.unsubscribe();
+              this.getTask();
             }
           }
         },
@@ -478,14 +448,15 @@ export class HomeComponent implements OnInit {
       .pipe(switchMap(() => this.ideaService.getTask(this.projectId.toString())))
       .subscribe({
         next: (response: TaskResponse) => {
-          this.task = response.task;
-          this.alertMessage = 'Task Created';
+          this.task = response.task.replace(/\n/g, '  \n');
+          this.alertMessage = "Generating task breakdown...";
           this.cdr.detectChanges();
           // Unsubscribe if data received
           if (this.task) {
             // Check if subscription is defined before trying to unsubscribe
             if (this.subscription) {
               this.subscription.unsubscribe();
+              this.alertMessage = '';
             }
           }
         },
@@ -495,27 +466,206 @@ export class HomeComponent implements OnInit {
       })
   }
 
-
-  getRole() {
-    this.subscription = interval(this.pollingIntervalInSeconds * 1000)
-      .pipe(switchMap(() => this.ideaService.getRole(this.projectId.toString())))
-      .subscribe({
-        next: (response: RoleResponse) => {
-          this.role = response.role;
-          this.alertMessage = 'Role Created';
-          this.cdr.detectChanges();
-          // Unsubscribe if data received
-          if (this.role) {
-            // Check if subscription is defined before trying to unsubscribe
-            if (this.subscription) {
-              this.subscription.unsubscribe();
-            }
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        }
-      })
+  startEditing(field: string) {
+    switch (field) {
+      case 'title':
+        this.isEditingTitle = true;
+        this.editingTitle = this.title;
+        break;
+      case 'summary':
+        this.isEditingSummary = true;
+        this.editingSummary = this.summary;
+        break;
+      case 'business_case':
+        this.isEditingBusinessCase = true;
+        this.editingBusinessCase = this.business_case;
+        break;
+      case 'goal':
+        this.isEditingGoal = true;
+        this.editingGoal = this.goal;
+        break;
+      case 'objective':
+        this.isEditingObjective = true;
+        this.editingObjective = this.objective;
+        break;
+      case 'scope_deliverables':
+        this.isEditingScopeDeliverables = true;
+        this.editingScopeDeliverables = this.scope_deliverables;
+        break;
+      case 'work_breakdown_structure':
+        this.isEditingWorkBreakdownStructure = true;
+        this.editingWorkBreakdownStructure = this.work_breakdown_structure;
+        break;
+      case 'timeline_milestones':
+        this.isEditingTimelineMilestones = true;
+        this.editingTimelineMilestones = this.timeline_milestones;
+        break;
+      case 'budget_resources':
+        this.isEditingBudgetResources = true;
+        this.editingBudgetResources = this.budget_resources;
+        break;
+      case 'risk_assumption':
+        this.isEditingRiskAssumption = true;
+        this.editingRiskAssumption = this.risk_assumption;
+        break;
+      case 'task':
+        this.isEditingTask = true;
+        this.editingTask = this.task;
+        break;
+    }
   }
 
+  cancelEditing(field: string) {
+    switch (field) {
+      case 'title':
+        this.isEditingTitle = false;
+        break;
+      case 'summary':
+        this.isEditingSummary = false;
+        break;
+      case 'business_case':
+        this.isEditingBusinessCase = false;
+        break;
+      case 'goal':
+        this.isEditingGoal = false;
+        break;
+      case 'objective':
+        this.isEditingObjective = false;
+        break;
+      case 'scope_deliverables':
+        this.isEditingScopeDeliverables = false;
+        break;
+      case 'work_breakdown_structure':
+        this.isEditingWorkBreakdownStructure = false;
+        break;
+      case 'timeline_milestones':
+        this.isEditingTimelineMilestones = false;
+        break;
+      case 'budget_resources':
+        this.isEditingBudgetResources = false;
+        break;
+      case 'risk_assumption':
+        this.isEditingRiskAssumption = false;
+        break;
+      case 'task':
+        this.isEditingTask = false;
+        break;
+    }
+  }
+
+  saveEditing(field: string) {
+    let content: string;
+    switch (field) {
+      case 'title':
+        content = this.editingTitle;
+        this.title = content;
+        this.isEditingTitle = false;
+        break;
+      case 'summary':
+        content = this.editingSummary;
+        this.summary = content;
+        this.isEditingSummary = false;
+        break;
+      case 'business_case':
+        content = this.editingBusinessCase;
+        this.business_case = content;
+        this.isEditingBusinessCase = false;
+        break;
+      case 'goal':
+        content = this.editingGoal;
+        this.goal = content;
+        this.isEditingGoal = false;
+        break;
+      case 'objective':
+        content = this.editingObjective;
+        this.objective = content;
+        this.isEditingObjective = false;
+        break;
+      case 'scope_deliverables':
+        content = this.editingScopeDeliverables;
+        this.scope_deliverables = content;
+        this.isEditingScopeDeliverables = false;
+        break;
+      case 'work_breakdown_structure':
+        content = this.editingWorkBreakdownStructure;
+        this.work_breakdown_structure = content;
+        this.isEditingWorkBreakdownStructure = false;
+        break;
+      case 'timeline_milestones':
+        content = this.editingTimelineMilestones;
+        this.timeline_milestones = content;
+        this.isEditingTimelineMilestones = false;
+        break;
+      case 'budget_resources':
+        content = this.editingBudgetResources;
+        this.budget_resources = content;
+        this.isEditingBudgetResources = false;
+        break;
+      case 'risk_assumption':
+        content = this.editingRiskAssumption;
+        this.risk_assumption = content;
+        this.isEditingRiskAssumption = false;
+        break;
+      case 'task':
+        content = this.editingTask;
+        this.task = content;
+        this.isEditingTask = false;
+        break;
+      default:
+        return;
+    }
+
+    // Save to backend
+    this.ideaService.updateProjectContent(this.projectId, field, content).subscribe({
+      next: (response: UpdateResponse) => {
+        console.log(`${field} updated successfully`);
+      },
+      error: (error: Error) => {
+        console.error(`Error updating ${field}:`, error);
+      }
+    });
+  }
+
+  // Add these methods to handle content transformations
+  getCleanTitle(): string {
+    if (!this.title) return '';
+    return this.title
+      .replace(/^[#\s]*Project Title:?\s*/i, '')  // Remove "Project Title:" and any #
+      .replace(/^['"`]*|['"`]*$/g, '')            // Remove quotes/backticks
+      .replace(/^markdown\s*/i, '')               // Remove 'markdown' text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')     // Remove backticks
+      .trim();                                    // Clean up whitespace
+  }
+
+  getCleanSummary(): string {
+    return this.summary.replace(/^##\s*Summary:\s*/, '');
+  }
+
+  getCleanBusinessCase(): string {
+    return this.business_case.replace(/^##\s*Business Case:\s*/, '');
+  }
+
+  getCleanGoal(): string {
+    return this.goal.replace(/^##\s*Goal:\s*/, '');
+  }
+
+  getCleanObjective(): string {
+    return this.objective.replace(/^##\s*Objective:\s*/, '');
+  }
+
+  getCleanScopeDeliverables(): string {
+    return this.scope_deliverables.replace(/^##\s*Scope & Deliverables:\s*/, '');
+  }
+
+  getCleanBudgetResources(): string {
+    return this.budget_resources.replace(/^##\s*Budget & Resources:\s*/, '');
+  }
+
+  getCleanRiskAssumption(): string {
+    return this.risk_assumption.replace(/^##\s*Risk & Assumptions:\s*/, '');
+  }
+
+  getCleanTask(): string {
+    return this.task.replace(/^##\s*Task Breakdown:\s*/, '');
+  }
 }
