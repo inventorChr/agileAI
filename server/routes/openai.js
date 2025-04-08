@@ -1,16 +1,12 @@
 const dotenv = require('dotenv');
 const express = require('express');
 const router = express.Router();
-const {Configuration, OpenAIApi} = require("openai");
+const OpenAI = require("openai");
 
 dotenv.config();
 
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-    max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS),
-    temperature: Number(process.env.OPENAI_TEMPERATURE),
-    top_p: Number(process.env.OPENAI_TOP_P),
-    n: Number(process.env.OPENAI_N),
 });
 
 const today = new Date();
@@ -28,16 +24,19 @@ const formattedDate = `${year}-${month}-${day}`;
 
 
 router.post('/', async (req, res) => {
-    const openai = new OpenAIApi(configuration);
     const messageContent = req.body.message;
 
     try {
-        const response = await openai.createChatCompletion({
+        const response = await openai.chat.completions.create({
             messages: [{role: "user", content: messageContent}],
-            model: process.env.OPENAI_MODEL_ENGINE,
+            model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+            max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+            temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+            top_p: Number(process.env.OPENAI_TOP_P) || 1,
+            n: Number(process.env.OPENAI_N) || 1,
         });
 
-        res.json(response.data.choices[0].message);  // Access the .data property of the response
+        res.json(response.choices[0].message);
     } catch (error) {
         console.error(`Error: ${error}`);
         res.status(500).send(error.message);
@@ -315,7 +314,9 @@ router.get('/task', async (req, res) => {
 
 
 async function processIdea(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -341,13 +342,17 @@ async function processIdea(project) {
 
     try {
         // Generate a response from OpenAI
-        const response = await openai.createChatCompletion({
-            model: process.env.OPENAI_MODEL_ENGINE,
+        const response = await openai.chat.completions.create({
+            model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
             messages,
+            max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+            temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+            top_p: Number(process.env.OPENAI_TOP_P) || 1,
+            n: Number(process.env.OPENAI_N) || 1,
         });
 
         // Get the content of the response
-        const responseContent = response.data.choices[0].message.content;
+        const responseContent = response.choices[0].message.content;
 
         console.log('---------------------------- Response 1 ----------------------------');
         console.log(responseContent);
@@ -374,7 +379,9 @@ async function processIdea(project) {
 
 
 async function charterIteration(responseContent, project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -397,9 +404,13 @@ async function charterIteration(responseContent, project) {
         // Generate a response from OpenAI
         let response;
         try {
-            response = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            response = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
@@ -407,7 +418,7 @@ async function charterIteration(responseContent, project) {
 
 
         // Get the content of the response
-        const charterResponse = response.data.choices[0].message.content;
+        const charterResponse = response.choices[0].message.content;
 
         console.log('---------------------------- Project Charter ----------------------------');
         console.log('Project ID:', project.id);
@@ -434,7 +445,9 @@ async function charterIteration(responseContent, project) {
 
 
 async function titleIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -457,16 +470,20 @@ async function titleIteration(project) {
         // Generate a response from OpenAI
         let response;
         try {
-            response = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            response = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = response.data.choices[0].message.content;
+        const responseContent = response.choices[0].message.content;
         console.log('---------------------------- Title ----------------------------');
         console.log(responseContent);
 
@@ -488,7 +505,9 @@ async function titleIteration(project) {
 
 
 async function summaryIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -511,16 +530,20 @@ async function summaryIteration(project) {
         // Generate a response from OpenAI
         let response;
         try {
-            response = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            response = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = response.data.choices[0].message.content;
+        const responseContent = response.choices[0].message.content;
         console.log('---------------------------- Summary ----------------------------');
         console.log(responseContent);
 
@@ -543,7 +566,9 @@ async function summaryIteration(project) {
 
 
 async function businessCaseIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -567,16 +592,20 @@ async function businessCaseIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Business Case ----------------------------');
         console.log(responseContent);
@@ -598,7 +627,9 @@ async function businessCaseIteration(project) {
 }
 
 async function goalsIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -618,16 +649,20 @@ async function goalsIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Goals ----------------------------');
         console.log(responseContent);
@@ -648,7 +683,9 @@ async function goalsIteration(project) {
 
 
 async function objectiveIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -668,16 +705,20 @@ async function objectiveIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Objective ----------------------------');
         console.log(responseContent);
@@ -699,7 +740,9 @@ async function objectiveIteration(project) {
 
 
 async function scopeDeliverablesIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -719,16 +762,20 @@ async function scopeDeliverablesIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Scope And Deliverables ----------------------------');
         console.log(responseContent);
@@ -750,7 +797,9 @@ async function scopeDeliverablesIteration(project) {
 
 
 async function workBreakdownStructureIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -770,16 +819,20 @@ async function workBreakdownStructureIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Work Breakdown Structure ----------------------------');
         console.log(responseContent);
@@ -799,7 +852,9 @@ async function workBreakdownStructureIteration(project) {
 
 
 async function timelineMilestonesIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -819,16 +874,20 @@ async function timelineMilestonesIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Timeline Milestones ----------------------------');
         console.log(responseContent);
@@ -848,7 +907,9 @@ async function timelineMilestonesIteration(project) {
 }
 
 async function budgetResourcesIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -868,16 +929,20 @@ async function budgetResourcesIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Budget Resources ----------------------------');
         console.log(responseContent);
@@ -896,7 +961,9 @@ async function budgetResourcesIteration(project) {
 }
 
 async function riskAssumptionIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -916,16 +983,20 @@ async function riskAssumptionIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Risk and Assumptions ----------------------------');
         console.log(responseContent);
@@ -944,7 +1015,9 @@ async function riskAssumptionIteration(project) {
 }
 
 async function taskIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -963,16 +1036,20 @@ async function taskIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Task ----------------------------');
         console.log(responseContent);
@@ -989,7 +1066,9 @@ async function taskIteration(project) {
 }
 
 async function stakeholderIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -1011,16 +1090,20 @@ async function stakeholderIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Stakeholders ----------------------------');
         console.log(responseContent);
@@ -1044,7 +1127,9 @@ async function stakeholderIteration(project) {
 
 
 async function rolesIteration(project) {
-    const openai = new OpenAIApi(configuration);
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     // Ensure that project is provided
     if (!project) {
@@ -1065,16 +1150,20 @@ async function rolesIteration(project) {
         // Generate a response from OpenAI
         let r;
         try {
-            r = await openai.createChatCompletion({
-                model: process.env.OPENAI_MODEL_ENGINE,
-                messages
+            r = await openai.chat.completions.create({
+                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+                messages,
+                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+                top_p: Number(process.env.OPENAI_TOP_P) || 1,
+                n: Number(process.env.OPENAI_N) || 1,
             });
         } catch (error) {
             console.error('An error occurred during the OpenAI API call:', error);
         }
 
         // Get the content of the response
-        const responseContent = r.data.choices[0].message.content;
+        const responseContent = r.choices[0].message.content;
 
         console.log('---------------------------- Roles ----------------------------');
         console.log(responseContent);
