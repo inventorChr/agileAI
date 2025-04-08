@@ -1,4 +1,4 @@
-import {Component, ChangeDetectorRef} from '@angular/core';
+import {Component, ChangeDetectorRef, OnInit} from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import {
   IdeaService,
@@ -22,8 +22,7 @@ import {
 import {ActivatedRoute} from "@angular/router";
 import {interval, Subscription, switchMap} from "rxjs";
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -60,6 +59,7 @@ import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatRippleModule } from '@angular/material/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { HttpClientModule } from '@angular/common/http';
 import { MarkdownModule } from 'ngx-markdown';
 
 @Component({
@@ -107,11 +107,12 @@ import { MarkdownModule } from 'ngx-markdown';
     MatRippleModule,
     MatGridListModule,
     MatProgressBarModule,
+    HttpClientModule,
     MarkdownModule
   ]
 })
 
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   projectId: number;
   idea: string = '';
   additionalInfo: string = '';
@@ -142,11 +143,13 @@ export class HomeComponent {
 
   pollingIntervalInSeconds = 5;
 
-
   constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef, private ideaService: IdeaService) {
     let id = this.route.snapshot.paramMap.get('id');
     this.projectId = id ? +id : 0;
+  }
 
+  ngOnInit() {
+    this.startFetchingData();
   }
 
   submitIdea() {

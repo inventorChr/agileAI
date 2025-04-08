@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
-import { HomeComponent } from './home/home.component';
+import { routes } from './app.routes';
 
 @Component({
   selector: 'app-root',
@@ -20,8 +20,7 @@ import { HomeComponent } from './home/home.component';
     MatButtonModule,
     MatIconModule,
     MatSidenavModule,
-    MatListModule,
-    HomeComponent
+    MatListModule
   ]
 })
 export class AppComponent {
