@@ -736,4 +736,24 @@ export class HomeComponent implements OnInit {
   getCleanTask(): string {
     return this.task.replace(/^##\s*Task Breakdown:\s*/, '');
   }
+
+  getCleanWorkBreakdownStructure(): string {
+    if (!this.work_breakdown_structure) return '';
+    return this.work_breakdown_structure
+      .replace(/^[#\s]*Work Breakdown Structure:?\s*/i, '')  // Remove "Work Breakdown Structure:" and any #
+      .replace(/^['"`]*|['"`]*$/g, '')                       // Remove quotes/backticks
+      .replace(/^markdown\s*/i, '')                          // Remove 'markdown' text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')                // Remove backticks
+      .trim();                                               // Clean up whitespace
+  }
+
+  getCleanTimelineMilestones(): string {
+    if (!this.timeline_milestones) return '';
+    return this.timeline_milestones
+      .replace(/^[#\s]*Timeline (?:&|and) Milestones:?\s*/i, '')  // Remove "Timeline & Milestones:" and any #
+      .replace(/^['"`]*|['"`]*$/g, '')                             // Remove quotes/backticks
+      .replace(/^markdown\s*/i, '')                                // Remove 'markdown' text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')                      // Remove backticks
+      .trim();                                                     // Clean up whitespace
+  }
 }

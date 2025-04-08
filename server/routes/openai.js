@@ -792,11 +792,23 @@ async function objectiveIteration(project) {
     if (!project) {
         throw new Error('project is required.');
     }
-    let prompt = `
-        1. Review the Project Outline: ${project.project_outline_charter}.
-        2. Your **GOAL** is to generate a list of objectives encompassing the project.
-        3. Generated text shall only be the objectives of the project, formatted ## objectives.
-        4. Generated text must be formatted in MARKDOWN.`;
+    const prompt = `
+    Review the following project charter: ${project.project_outline_charter}
+
+    Your task:
+    1. Generate a concise list of clear, measurable objectives that align directly with the project's goals and scope.
+    2. Objectives should describe **what success looks like** for the project — focusing on actionable outcomes, not abstract ideals.
+    3. Do NOT fabricate or assume any objectives that are not clearly stated or strongly implied in the charter.
+    4. Omit anything that cannot be confidently derived from the input.
+    5. Format the output as:
+        ## Objectives
+        - <objective 1>
+        - <objective 2>
+        - <objective 3>
+
+    Only return the objectives section in Markdown.
+    `;
+
 
     const messages = [
         {role: 'system', content: prompt},
@@ -849,11 +861,27 @@ async function scopeDeliverablesIteration(project) {
     if (!project) {
         throw new Error('project is required.');
     }
-    let prompt = `
-        1. Review the Project Outline: ${project.project_outline_charter}.
-        2. Your **GOAL** is to generate a list of scope and deliverables encompassing the project.
-        3. Generated text shall be a list of scope items and deliverables without any title or header.
-        4. Generated text must be formatted in MARKDOWN using bullet points.`;
+    const prompt = `
+    Review the following project charter: ${project.project_outline_charter}
+
+    Your task:
+    1. Create two clearly separated sections:
+        - **Scope**: Define what the project will cover or include. Focus on boundaries, features, and areas of responsibility.
+        - **Deliverables**: List the tangible outputs or results expected from the project.
+    2. Only include items explicitly stated or logically supported by the charter.
+    3. Do NOT assume or invent any items not found or implied in the input.
+    4. Format the output in Markdown like this:
+
+    ## Scope
+        - <scope item 1>
+        - <scope item 2>
+
+    ## Deliverables
+        - <deliverable 1>
+        - <deliverable 2>
+
+    Only return these two sections in Markdown.
+    `;
 
     const messages = [
         {role: 'system', content: prompt},
@@ -906,11 +934,25 @@ async function workBreakdownStructureIteration(project) {
     if (!project) {
         throw new Error('project is required.');
     }
-    let prompt = `
-        1. Review the Project Outline: ${project.project_outline_charter}.
-        2. Your **GOAL** is to generate a comprehensive work breakdown structure encompassing the project.
-        3. Generated text shall only be the work breakdown structure of the project, formatted ## work breakdown structure.
-        4. Generated text must be formatted in Markdown.`;
+    const prompt = `
+    Review the following project charter: ${project.project_outline_charter}
+
+    Your task:
+    1. Generate a clear and hierarchical **Work Breakdown Structure (WBS)** based strictly on the content of the charter.
+    2. Break the project into logical phases, components, or work packages where possible.
+    3. Only include tasks and phases that are explicitly described or logically implied in the charter — do NOT fabricate.
+    4. Use a Markdown nested bullet format like this:
+
+    ## Work Breakdown Structure
+    - Phase 1: <name>
+        - Task 1.1: <subtask>
+        - Task 1.2: <subtask>
+    - Phase 2: <name>
+        - Task 2.1: <subtask>
+
+    Only return the Work Breakdown Structure section in Markdown.
+    `;
+
 
     const messages = [
         {role: 'system', content: prompt},
@@ -961,11 +1003,28 @@ async function timelineMilestonesIteration(project) {
     if (!project) {
         throw new Error('project is required.');
     }
-    let prompt = `
-        1. Review the Project Outline: ${project.project_outline_charter}.
-        2. Your **GOAL** is to parse the project outline and generate comprehensive timeline and milestones encompassing the project.
-        3. Generated text shall only be the timeline and milestones of the project, formatted ## timeline and milestones.
-        4. Generated text must be formatted in Markdown.`;
+    const prompt = `
+    Review the following project charter: ${project.project_outline_charter}
+
+    Your task:
+    1. Generate a project timeline and list of major milestones based strictly on the content of the charter.
+    2. If no dates or durations are explicitly provided, do NOT invent them — use relative phases instead (e.g., "Phase 1", "Initial Planning").
+    3. The timeline should provide a logical sequence of phases or events.
+    4. Milestones should be distinct, measurable markers of progress.
+    5. Format the output in Markdown as follows:
+
+    ## Timeline
+    - Phase 1: <description>
+    - Phase 2: <description>
+    - Phase 3: <description>
+
+    ## Milestones
+    - <milestone 1>
+    - <milestone 2>
+    - <milestone 3>
+
+    Only return the timeline and milestone sections in Markdown.
+    `;
 
     const messages = [
         {role: 'system', content: prompt},
@@ -1016,20 +1075,31 @@ async function budgetResourcesIteration(project) {
     if (!project) {
         throw new Error('project is required.');
     }
-    let prompt = `
-        1. Review the Project Outline: ${project.project_outline_charter}.
-        2. Parse data for budget and resource information.
-        3. Your **Goal** is to generate a clear budget and resources breakdown.
-        4. Structure the content as follows without any headers or titles:
-           - First paragraph: Brief budget overview (total budget and key allocations)
-           - Then list all resources using bullet points, grouped by category:
-             * Human Resources (team members, roles)
-             * Material Resources (software, hardware, tools)
-             * Financial Resources (specific budget allocations)
-             * Time Resources (time-related allocations)
-        5. Do not include any section titles, headers, or category labels
-        6. Use bullet points (*) for all resource items
-        7. Generated text must be in Markdown format`;
+    const prompt = `
+    Review the following project charter: ${project.project_outline_charter}
+
+    Your task:
+    1. Generate a concise budget and resource breakdown based strictly on the content provided.
+    2. Do NOT invent or assume any details (e.g., total amounts, team members, tools, or timelines) unless explicitly stated or clearly implied.
+    3. If budget info is missing, omit it — do not attempt to estimate or fabricate.
+    4. Format the output in Markdown using the following structure:
+
+    ## Budget Overview
+    <brief paragraph summarizing the budget, if available>
+
+    ## Resources
+    * Human Resources
+        - <item>
+    * Material Resources
+        - <item>
+    * Financial Resources
+        - <item>
+    * Time Resources
+        - <item>
+
+    Only return the budget and resource sections in Markdown.
+    `;
+
 
     const messages = [
         {role:'system', content: prompt},

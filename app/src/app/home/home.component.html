@@ -179,6 +179,48 @@
 
           <div class="section">
             <div class="section-header">
+              <h2 class="section-title">Work Breakdown Structure</h2>
+              <button *ngIf="!isEditingWorkBreakdownStructure" (click)="startEditing('work_breakdown_structure')" class="edit-button" matTooltip="Edit work breakdown structure">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+            <div class="section-content">
+              <div *ngIf="isEditingWorkBreakdownStructure" class="edit-form">
+                <textarea [(ngModel)]="editingWorkBreakdownStructure"></textarea>
+                <div class="button-group">
+                  <button (click)="cancelEditing('work_breakdown_structure')">Cancel</button>
+                  <button (click)="saveEditing('work_breakdown_structure')">Save</button>
+                </div>
+              </div>
+              <div *ngIf="!isEditingWorkBreakdownStructure" class="markdown-content">
+                <markdown [data]="getCleanWorkBreakdownStructure()"></markdown>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h2 class="section-title">Timeline & Milestones</h2>
+              <button *ngIf="!isEditingTimelineMilestones" (click)="startEditing('timeline_milestones')" class="edit-button" matTooltip="Edit timeline and milestones">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+            <div class="section-content">
+              <div *ngIf="isEditingTimelineMilestones" class="edit-form">
+                <textarea [(ngModel)]="editingTimelineMilestones"></textarea>
+                <div class="button-group">
+                  <button (click)="cancelEditing('timeline_milestones')">Cancel</button>
+                  <button (click)="saveEditing('timeline_milestones')">Save</button>
+                </div>
+              </div>
+              <div *ngIf="!isEditingTimelineMilestones" class="markdown-content">
+                <markdown [data]="getCleanTimelineMilestones()"></markdown>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
               <h2 class="section-title">Budget & Resources</h2>
               <button *ngIf="!isEditingBudgetResources" (click)="startEditing('budget_resources')" class="edit-button" matTooltip="Edit budget and resources">
                 <mat-icon>edit</mat-icon>
