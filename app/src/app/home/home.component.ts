@@ -706,7 +706,13 @@ export class HomeComponent implements OnInit {
   }
 
   getCleanBudgetResources(): string {
-    return this.budget_resources.replace(/^##\s*Budget & Resources:\s*/, '');
+    if (!this.budget_resources) return '';
+    return this.budget_resources
+      .replace(/^[#\s]*Budget (?:&|and) Resources:?\s*/i, '')  // Remove both "Budget & Resources:" and "Budget and Resources:" and any #
+      .replace(/^['"`]*|['"`]*$/g, '')                         // Remove quotes/backticks
+      .replace(/^markdown\s*/i, '')                            // Remove 'markdown' text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')                  // Remove backticks
+      .trim();                                                 // Clean up whitespace
   }
 
   getCleanRiskAssumption(): string {

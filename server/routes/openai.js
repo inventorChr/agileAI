@@ -953,9 +953,18 @@ async function budgetResourcesIteration(project) {
     }
     let prompt = `
         1. Review the Project Outline: ${project.project_outline_charter}.
-        2. Parse data for any information related to the Budget and Resources of the project.
-        3. Your **Goal** is to create the section of the project called budget and resources.
-        4. Generated text must be formatted in Markdown.`;
+        2. Parse data for budget and resource information.
+        3. Your **Goal** is to generate a clear budget and resources breakdown.
+        4. Structure the content as follows without any headers or titles:
+           - First paragraph: Brief budget overview (total budget and key allocations)
+           - Then list all resources using bullet points, grouped by category:
+             * Human Resources (team members, roles)
+             * Material Resources (software, hardware, tools)
+             * Financial Resources (specific budget allocations)
+             * Time Resources (time-related allocations)
+        5. Do not include any section titles, headers, or category labels
+        6. Use bullet points (*) for all resource items
+        7. Generated text must be in Markdown format`;
 
     const messages = [
         {role:'system', content: prompt},
@@ -990,7 +999,7 @@ async function budgetResourcesIteration(project) {
         // Call riskAssumptionIteration
         await riskAssumptionIteration(project);
 
-        return {message: 'Roles identified and saved successfully'};
+        return {message: 'Budget and resources generated successfully'};
     } catch (error) {
         console.error('An error occurred:', error);
     }
