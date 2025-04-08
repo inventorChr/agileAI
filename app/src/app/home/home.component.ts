@@ -663,28 +663,32 @@ export class HomeComponent implements OnInit {
   getCleanTitle(): string {
     if (!this.title) return '';
     return this.title
-      .replace(/^[#\s]*Project Title:?\s*/i, '')  // Remove "Project Title:" and any #
-      .replace(/^['"`]*|['"`]*$/g, '')            // Remove quotes/backticks
-      .replace(/^markdown\s*/i, '')               // Remove 'markdown' text
-      .replace(/^\s*```\s*|\s*```\s*$/g, '')     // Remove backticks
-      .trim();                                    // Clean up whitespace
+      .replace(/^markdown\s*/i, '')                // Remove 'markdown' text first
+      .replace(/^[#\s]*Project Title:?\s*/i, '')   // Remove "Project Title:" and any #
+      .replace(/^[#\s]+/, '')                      // Remove any remaining # at the start
+      .replace(/^["'`]|["'`]$/g, '')              // Remove quotes/backticks at start/end
+      .trim();                                     // Clean up whitespace
   }
 
   getCleanSummary(): string {
     if (!this.summary) return '';
     return this.summary
-      .replace(/^[#\s]*Summary:?\s*/i, '')  // Remove "Summary:" and any #
-      .trim();                              // Clean up whitespace
+      .replace(/^[#\s]*Summary:?\s*/i, '')       // Remove "Summary:" and any #
+      .replace(/^['"`]*|['"`]*$/g, '')           // Remove quotes/backticks
+      .replace(/^markdown\s*/i, '')              // Remove 'markdown' text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')    // Remove backticks
+      .trim();                                   // Clean up whitespace
   }
 
   getCleanBusinessCase(): string {
     if (!this.business_case) return '';
     return this.business_case
       .replace(/^[#\s]*Business Case:?\s*/i, '')  // Remove "Business Case:" and any #
-      .replace(/^['"`]*|['"`]*$/g, '')            // Remove quotes/backticks
-      .replace(/^markdown\s*/i, '')               // Remove 'markdown' text
-      .replace(/^\s*```\s*|\s*```\s*$/g, '')     // Remove backticks
-      .trim();                                    // Clean up whitespace
+      .replace(/^Business Case:?\s*/i, '')        // Remove any remaining "Business Case:" without #
+      .replace(/^['"`]*|['"`]*$/g, '')           // Remove quotes/backticks
+      .replace(/^markdown\s*/i, '')              // Remove 'markdown' text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')    // Remove backticks
+      .trim();                                   // Clean up whitespace
   }
 
   getCleanGoal(): string {
