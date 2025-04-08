@@ -787,8 +787,8 @@ async function scopeDeliverablesIteration(project) {
     let prompt = `
         1. Review the Project Outline: ${project.project_outline_charter}.
         2. Your **GOAL** is to generate a list of scope and deliverables encompassing the project.
-        3. Generated text shall only be the scope and deliverables of the project, formatted ## scope and deliverables.
-        4. Generated text must be formatted in MARKDOWN.`;
+        3. Generated text shall be a list of scope items and deliverables without any title or header.
+        4. Generated text must be formatted in MARKDOWN using bullet points.`;
 
     const messages = [
         {role: 'system', content: prompt},
@@ -823,7 +823,7 @@ async function scopeDeliverablesIteration(project) {
         // Call workBreakdownStructureIteration and pass responseContent
         await workBreakdownStructureIteration(project);
 
-        return {message: 'Roles identified and saved successfully'};
+        return {message: 'Scope and deliverables generated successfully'};
     } catch (error) {
         console.error('An error occurred:', error);
     }
