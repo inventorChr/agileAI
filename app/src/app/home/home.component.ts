@@ -722,11 +722,14 @@ export class HomeComponent implements OnInit {
   getCleanBudgetResources(): string {
     if (!this.budget_resources) return '';
     return this.budget_resources
-      .replace(/^[#\s]*Budget (?:&|and) Resources:?\s*/i, '')  // Remove both "Budget & Resources:" and "Budget and Resources:" and any #
-      .replace(/^['"`]*|['"`]*$/g, '')                         // Remove quotes/backticks
-      .replace(/^markdown\s*/i, '')                            // Remove 'markdown' text
-      .replace(/^\s*```\s*|\s*```\s*$/g, '')                  // Remove backticks
-      .trim();                                                 // Clean up whitespace
+      .replace(/^[#\s]*Budget (?:&|and) Resources:?\s*/i, '')  // Remove header
+      .replace(/^['"`]*|['"`]*$/g, '')                         // Remove quotes
+      .replace(/^markdown\s*/i, '')                            // Remove markdown text
+      .replace(/^\s*```\s*|\s*```\s*$/g, '')                  // Remove code blocks
+      .replace(/^(###\s+[^#\n]+)$/gm, '\n$1')                // Add newline before H3 headers
+      .replace(/^(- .+)$/gm, '    $1')                        // Indent all list items
+      .replace(/^(### .+\n)(.+)/gm, '$1\n$2')                // Add newline after headers
+      .trim();
   }
 
   getCleanRiskAssumption(): string {

@@ -427,7 +427,6 @@ async function charterIteration(responseContent, project) {
         apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // Ensure that project is provided
     if (!project) {
         throw new Error('project is required.');
     }
@@ -437,55 +436,145 @@ async function charterIteration(responseContent, project) {
     Date: ${formattedDate}
 
     Your task:
-    1. Generate a complete project charter that defines the project's vision, purpose, scope, and strategic value.
-    2. Do NOT invent or assume details not clearly stated (e.g., dates, approvals, team roles, budgets).
-    3. If any section cannot be determined from the input, omit it entirely.
-    4. The tone must be visionary and strategic, yet grounded and actionable — suitable for use in early-stage planning.
-    5. Format the output in clear, structured Markdown with appropriate section headings.
+    Generate a comprehensive project charter. Format your response EXACTLY as follows, using proper Markdown.
+    Each section MUST be clearly delimited with its own heading:
+
+    # Project Title
+    [A clear, concise title that reflects the project's purpose]
+
+    ## Project Summary
+    [A brief overview of the project's purpose, goals, and expected outcomes]
+
+    ## Business Case
+    - Problem Statement
+    - Proposed Solution
+    - Expected Benefits
+    - Strategic Alignment
+
+    ## Goals and Objectives
+    ### High-Level Goals
+    [Strategic, long-term intentions]
+    
+    ### Supporting Goals
+    [Tactical, implementation-level goals]
+    
+    ### Objectives
+    [Specific, measurable objectives]
+
+    ## Scope and Deliverables
+    ### Project Scope
+    - In Scope
+    - Out of Scope
+    
+    ### Deliverables
+    [List of tangible outputs]
+
+    ## Work Breakdown Structure
+    - Phase 1: [name]
+      - Task 1.1
+      - Task 1.2
+    - Phase 2: [name]
+      - Task 2.1
+      - Task 2.2
+
+    ## Timeline and Milestones
+    ### Timeline
+    [Key phases and durations]
+    
+    ### Milestones
+    [Critical project checkpoints]
+
+    ## Budget and Resources
+    ### Budget Overview
+    [Total budget and major allocations]
+
+    ### Resources Required
+    #### Human Resources
+    [Team roles and skills needed]
+    
+    #### Material Resources
+    [Equipment, tools, facilities needed]
+    
+    #### Financial Resources
+    [Detailed budget breakdown]
+    
+    #### Time Resources
+    [Time-related requirements]
+
+    ## Risks and Assumptions
+    ### Risks
+    [Identified project risks]
+    
+    ### Assumptions
+    [Key project assumptions]
+
+    ## Stakeholders
+    [Key stakeholders and their interests]
+
+    ## Project Roles
+    [Key roles and responsibilities]
+
+    Important Guidelines:
+    1. Include ALL sections, even if some lack specific details
+    2. For sections without specific information, state "Details not specified in project discussion"
+    3. Do NOT invent or assume details not present in the discussion
+    4. Use proper Markdown formatting throughout
+    5. Each section must be clearly delimited with the exact headings shown above
     `;
 
-
-    // Construct the assistant's messages
     const messages = [
         {role: 'system', content: prompt},
     ];
 
     try {
-        // Generate a response from OpenAI
-        let response;
-        try {
-            response = await openai.chat.completions.create({
-                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
-                messages,
-                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
-                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
-                top_p: Number(process.env.OPENAI_TOP_P) || 1,
-                n: Number(process.env.OPENAI_N) || 1,
-            });
-        } catch (error) {
-            console.error('An error occurred during the OpenAI API call:', error);
-        }
+        const response = await openai.chat.completions.create({
+            model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+            messages,
+            max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+            temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+            top_p: Number(process.env.OPENAI_TOP_P) || 1,
+            n: Number(process.env.OPENAI_N) || 1,
+        });
 
-
-        // Get the content of the response
         const charterResponse = response.choices[0].message.content;
-
         console.log('---------------------------- Project Charter ----------------------------');
         console.log('Project ID:', project.id);
 
+        // Extract each section using regex patterns
+        const sections = {
+            title: charterResponse.match(/# Project Title\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            summary: charterResponse.match(/## Project Summary\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            businessCase: charterResponse.match(/## Business Case\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            goals: charterResponse.match(/## Goals and Objectives\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            scopeDeliverables: charterResponse.match(/## Scope and Deliverables\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            workBreakdown: charterResponse.match(/## Work Breakdown Structure\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            timelineMilestones: charterResponse.match(/## Timeline and Milestones\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            budgetResources: charterResponse.match(/## Budget and Resources\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            risksAssumptions: charterResponse.match(/## Risks and Assumptions\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            stakeholders: charterResponse.match(/## Stakeholders\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+            roles: charterResponse.match(/## Project Roles\s*([\s\S]*?)(?=\n##|$)/)?.[1]?.trim(),
+        };
 
-        // Update the project's charter in the database
-        const updatedProject = await project.update(
-            {project_outline_charter: charterResponse},
-        );
-        updatedProject.project_outline_charter = charterResponse;
+        // Save all sections to their respective database fields
+        await project.update({
+            project_outline_charter: charterResponse,
+            project_outline_title: sections.title,
+            project_outline_summary: sections.summary,
+            project_outline_business_case: sections.businessCase,
+            project_plan_goals: sections.goals,
+            project_plan_scope_deliverables: sections.scopeDeliverables,
+            project_plan_work_breakdown_structure: sections.workBreakdown,
+            project_plan_timeline_milestones: sections.timelineMilestones,
+            project_plan_budget_resources: sections.budgetResources,
+            project_plan_risk_assumptions: sections.risksAssumptions,
+            project_stakeholders: sections.stakeholders,
+            project_roles: sections.roles
+        });
 
-        // Call titleIteration and pass responseContent
+        // Call titleIteration to begin the refinement process
         await titleIteration(project);
 
-
-        return {message: 'Charter drafted and saved successfully'};
-
+        return {message: 'Charter drafted and all sections saved successfully'};
     } catch (error) {
         console.error('An error occurred:', error);
         throw error;
@@ -499,28 +588,40 @@ async function titleIteration(project) {
         apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // Ensure that project is provided
     if (!project) {
         throw new Error('project is required.');
     }
 
     const prompt = `
-    Review the following project charter: ${project.project_outline_charter}
+    Review the following:
+    
+    Original Project Charter Title:
+    ${project.project_outline_title || "Title not specified"}
+
+    Full Project Charter Context:
+    ${project.project_outline_charter}
 
     Your task:
-    1. Extract or generate a project title that is clear, strategically aligned, and sparks interest.
-    2. The title should be visionary yet practical — suitable for attracting attention while communicating purpose.
+    1. Review the existing title and full charter context
+    2. Enhance or refine the title to be:
+       - Clear and concise
+       - Reflective of the project's purpose
+       - Strategically aligned
+       - Professional and engaging
     3. Format the output exactly as:
-        # Project Title:
-        <your title here>
+        # Project Title
+        <your enhanced title here>
 
-    Only return the title block in Markdown.
+    Important:
+    - Maintain consistency with the project's scope and objectives
+    - Do not contradict any information in the original charter
+    - If the existing title is already optimal, you may keep it
+    - Only return the title block in Markdown format
     `;
 
     const messages = [
         {role: 'system', content: prompt},
     ];
-
 
     try {
         // Generate a response from OpenAI
@@ -543,18 +644,17 @@ async function titleIteration(project) {
         console.log('---------------------------- Title ----------------------------');
         console.log(responseContent);
 
-        const updatedProject = await project.update(
-            {project_outline_title: responseContent},
-        );
-        updatedProject.project_outline_title = responseContent;
+        await project.update({
+            project_outline_title: responseContent
+        });
 
-        // Call summaryIteration and pass responseContent
+        // Call summaryIteration with the updated project
         await summaryIteration(project);
 
-
-        return {message: 'Title generated and saved successfully'};
+        return {message: 'Title enhanced and saved successfully'};
     } catch (error) {
         console.error('An error occurred:', error);
+        throw error;
     }
 }
 
@@ -565,68 +665,70 @@ async function summaryIteration(project) {
         apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // Ensure that project is provided
     if (!project) {
         throw new Error('project is required.');
     }
 
     const prompt = `
-    Review the following project charter: ${project.project_outline_charter}
-    Official Project Title: ${project.project_outline_title}
+    Review the following:
+    
+    Project Title:
+    ${project.project_outline_title}
+
+    Original Project Summary:
+    ${project.project_outline_summary || "Summary not specified"}
+
+    Full Project Charter Context:
+    ${project.project_outline_charter}
 
     Your task:
-    1. Write a clear, strategic summary that captures the project's vision, purpose, and value.
-    2. Do NOT invent or assume any information (e.g., names, dates, roles, budgets, approvals, or timelines) unless explicitly stated in the charter.
-    3. If such details are missing, omit them entirely.
-    4. The tone should inspire confidence and clarity — practical, grounded, and professional.
-    5. Use the official project title when referring to the project.
-    6. Format the output as:
-        ## Summary
-        <summary text>
+    1. Review the existing summary and full charter context
+    2. Enhance or refine the project summary to be:
+       - Clear and comprehensive
+       - Aligned with the project title
+       - Focused on key objectives and value
+       - Professional and well-structured
+    3. Format the output exactly as:
+        # Project Summary
+        <your enhanced summary here>
 
-    Only return the summary in Markdown.
+    Important:
+    - Maintain consistency with the project's scope and objectives
+    - Do not contradict any information in the original charter
+    - If the existing summary is already optimal, you may keep it
+    - Only return the summary block in Markdown format
+    - Keep the summary concise but informative (2-3 paragraphs)
     `;
-
 
     const messages = [
         {role: 'system', content: prompt},
     ];
 
-
     try {
-        // Generate a response from OpenAI
-        let response;
-        try {
-            response = await openai.chat.completions.create({
-                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
-                messages,
-                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
-                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
-                top_p: Number(process.env.OPENAI_TOP_P) || 1,
-                n: Number(process.env.OPENAI_N) || 1,
-            });
-        } catch (error) {
-            console.error('An error occurred during the OpenAI API call:', error);
-        }
+        const response = await openai.chat.completions.create({
+            model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+            messages,
+            max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+            temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+            top_p: Number(process.env.OPENAI_TOP_P) || 1,
+            n: Number(process.env.OPENAI_N) || 1,
+        });
 
-        // Get the content of the response
         const responseContent = response.choices[0].message.content;
         console.log('---------------------------- Summary ----------------------------');
         console.log(responseContent);
 
-        const updatedProject = await project.update(
-            {project_outline_summary: responseContent},
-        );
-        updatedProject.project_outline_summary = responseContent;
+        await project.update({
+            project_outline_summary: responseContent
+        });
 
-
-
-        // Call businessCaseIteration and pass responseContent
+        // Call businessCaseIteration with the updated project
         await businessCaseIteration(project);
 
-        return {message: 'Summary generated and saved successfully'};
+        return {message: 'Summary enhanced and saved successfully'};
     } catch (error) {
         console.error('An error occurred:', error);
+        throw error;
     }
 }
 
@@ -1071,72 +1173,101 @@ async function budgetResourcesIteration(project) {
         apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // Ensure that project is provided
     if (!project) {
         throw new Error('project is required.');
     }
+
     const prompt = `
-    Review the following project charter: ${project.project_outline_charter}
+    You are tasked with enhancing the Budget and Resources section of a project charter.
+
+    Original Project Charter:
+    ${project.project_outline_charter}
+
+    Current Budget & Resources Content:
+    ${project.project_plan_budget_resources || "No existing content"}
 
     Your task:
-    1. Generate a concise budget and resource breakdown based strictly on the content provided.
-    2. Do NOT invent or assume any details (e.g., total amounts, team members, tools, or timelines) unless explicitly stated or clearly implied.
-    3. If budget info is missing, omit it — do not attempt to estimate or fabricate.
-    4. Format the output in Markdown using the following structure:
+    1. First, locate and analyze the Budget and Resources section from the original project charter
+    2. Then, enhance and expand this section while maintaining consistency with the original charter
+    3. Generate a detailed breakdown following this EXACT structure:
 
     ## Budget Overview
-    <brief paragraph summarizing the budget, if available>
+    [Provide a comprehensive budget overview. Include all specific amounts mentioned in the charter.
+     If no specific budget is mentioned, clearly state what is known about financial constraints or expectations]
 
-    ## Resources
-    * Human Resources
-        - <item>
-    * Material Resources
-        - <item>
-    * Financial Resources
-        - <item>
-    * Time Resources
-        - <item>
+    ## Resources Required
 
-    Only return the budget and resource sections in Markdown.
+    ### Human Resources
+    [List all human resources mentioned or implied in the charter]
+    - Role/Position
+    - Required skills/expertise
+    - Team size (if specified)
+    - Reporting structure (if mentioned)
+
+    ### Material Resources
+    [List all physical/material resources mentioned or implied]
+    - Equipment needs
+    - Software requirements
+    - Hardware requirements
+    - Facilities/Space requirements
+    - Other material needs
+
+    ### Financial Resources
+    [Provide detailed financial breakdown]
+    - Development costs
+    - Marketing/Promotion costs
+    - Operational costs
+    - Contingency funds
+    - Other financial allocations
+
+    ### Time Resources
+    [Detail all time-related resources]
+    - Project duration
+    - Phase timelines
+    - Resource availability periods
+    - Key time constraints
+
+    Important Guidelines:
+    1. Maintain consistency with the original charter - do not contradict any existing information
+    2. Expand upon the original content with more detail and structure
+    3. For any category where details are not provided, explicitly state "Not specified in project charter"
+    4. Use bullet points for lists
+    5. Maintain proper markdown formatting
+    6. If specific amounts or numbers are mentioned in the charter, always include them
+    7. Do not invent or assume details not present in the original charter
+
+    Format your response using proper Markdown, ensuring clear hierarchy and readability.
     `;
 
-
     const messages = [
-        {role:'system', content: prompt},
+        {role: 'system', content: prompt},
     ];
 
     try {
-        // Generate a response from OpenAI
-        let r;
-        try {
-            r = await openai.chat.completions.create({
-                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
-                messages,
-                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
-                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
-                top_p: Number(process.env.OPENAI_TOP_P) || 1,
-                n: Number(process.env.OPENAI_N) || 1,
-            });
-        } catch (error) {
-            console.error('An error occurred during the OpenAI API call:', error);
-        }
+        const r = await openai.chat.completions.create({
+            model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+            messages,
+            max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+            temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+            top_p: Number(process.env.OPENAI_TOP_P) || 1,
+            n: Number(process.env.OPENAI_N) || 1,
+        });
 
-        // Get the content of the response
         const responseContent = r.choices[0].message.content;
-
         console.log('---------------------------- Budget Resources ----------------------------');
         console.log(responseContent);
 
-        const updatedProject = await project.update(
-            {project_plan_budget_resources: responseContent},
-        );
-        updatedProject.project_plan_budget_resources = responseContent;
+        await project.update({
+            project_plan_budget_resources: responseContent
+        });
+
         // Call riskAssumptionIteration
         await riskAssumptionIteration(project);
 
         return {message: 'Budget and resources generated successfully'};
     } catch (error) {
         console.error('An error occurred:', error);
+        throw error;
     }
 }
 
@@ -1145,52 +1276,78 @@ async function riskAssumptionIteration(project) {
         apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // Ensure that project is provided
     if (!project) {
         throw new Error('project is required.');
     }
-    let prompt = `
-        1. Review the Project Outline: ${project.project_outline_charter}.
-        2. Parse data for the keyword Risk and Assumptions.
-        3. Create the given risk and assumptions for the project.
-        4. Generated text must be formatted in Markdown.`;
+
+    const prompt = `
+    You are tasked with enhancing the Risks and Assumptions section of a project charter.
+
+    Original Project Charter:
+    ${project.project_outline_charter}
+
+    Current Risks & Assumptions Content:
+    ${project.project_plan_risk_assumptions || "No existing content"}
+
+    Your task:
+    1. First, locate and analyze the Risks and Assumptions section from the original project charter
+    2. Then, enhance and expand this section while maintaining consistency with the original charter
+    3. Generate a detailed breakdown following this structure:
+
+    ## Risks and Assumptions
+
+    ### Project Risks
+    [List and analyze all identified risks]
+    - Risk description
+    - Potential impact
+    - Likelihood (if mentioned)
+    - Mitigation strategies (if specified)
+
+    ### Project Assumptions
+    [List and analyze all stated assumptions]
+    - Business assumptions
+    - Technical assumptions
+    - Resource assumptions
+    - Timeline assumptions
+
+    Important Guidelines:
+    1. Maintain consistency with the original charter
+    2. Expand upon the original content with more detail
+    3. Clearly indicate when information is not specified
+    4. Use proper markdown formatting
+    5. Do not invent new risks or assumptions
+
+    Format your response using proper Markdown, ensuring clear hierarchy and readability.
+    `;
 
     const messages = [
-        {role:'system', content: prompt},
+        {role: 'system', content: prompt},
     ];
 
     try {
-        // Generate a response from OpenAI
-        let r;
-        try {
-            r = await openai.chat.completions.create({
-                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
-                messages,
-                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
-                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
-                top_p: Number(process.env.OPENAI_TOP_P) || 1,
-                n: Number(process.env.OPENAI_N) || 1,
-            });
-        } catch (error) {
-            console.error('An error occurred during the OpenAI API call:', error);
-        }
+        const r = await openai.chat.completions.create({
+            model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+            messages,
+            max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+            temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+            top_p: Number(process.env.OPENAI_TOP_P) || 1,
+            n: Number(process.env.OPENAI_N) || 1,
+        });
 
-        // Get the content of the response
         const responseContent = r.choices[0].message.content;
-
-        console.log('---------------------------- Risk and Assumptions ----------------------------');
+        console.log('---------------------------- Risks and Assumptions ----------------------------');
         console.log(responseContent);
 
-        const updatedProject = await project.update(
-            {project_plan_risk_assumptions: responseContent},
-        );
-        updatedProject.project_plan_risk_assumptions = responseContent;
+        await project.update({
+            project_plan_risk_assumptions: responseContent
+        });
 
-        await taskIteration(project)
+        await taskIteration(project);
 
-        return {message: 'Roles identified and saved successfully'};
+        return {message: 'Risks and assumptions enhanced successfully'};
     } catch (error) {
         console.error('An error occurred:', error);
+        throw error;
     }
 }
 
@@ -1250,131 +1407,239 @@ async function stakeholderIteration(project) {
         apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // Ensure that project is provided
     if (!project) {
         throw new Error('project is required.');
     }
 
     const prompt = `
-    1. Review the following discussion: ${project.project_outline_charter}.
-    2. Parse data and determine who the stakeholder's of the project are.
-    4. Response should be in Markdown.
+    You are tasked with identifying and analyzing project stakeholders.
+
+    Original Project Charter:
+    ${project.project_outline_charter}
+
+    Current Stakeholders Content:
+    ${project.project_stakeholders || "No existing content"}
+
+    Your task:
+    1. Review the project charter carefully
+    2. Identify all stakeholders mentioned or implied
+    3. For each stakeholder:
+       - Define their role/position
+       - Describe their interest in the project
+       - Outline their influence level
+       - Specify their requirements/expectations
+    4. Format the output exactly as:
+        # Project Stakeholders
+        
+        ## Key Stakeholders
+        [List primary stakeholders with details]
+        
+        ## Secondary Stakeholders
+        [List secondary stakeholders with details]
+        
+        ## External Stakeholders
+        [List external stakeholders if any]
+
+    Important Guidelines:
+    - Only include stakeholders mentioned or logically implied in the charter
+    - Do not invent stakeholders or details
+    - Use clear, professional language
+    - Format in proper Markdown
+    - If certain stakeholder categories are not present, note "None identified in project charter"
     `;
 
     const messages = [
         {role: 'system', content: prompt},
     ];
 
-
     try {
-        // Generate a response from OpenAI
-        let r;
-        try {
-            r = await openai.chat.completions.create({
-                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
-                messages,
-                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
-                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
-                top_p: Number(process.env.OPENAI_TOP_P) || 1,
-                n: Number(process.env.OPENAI_N) || 1,
-            });
-        } catch (error) {
-            console.error('An error occurred during the OpenAI API call:', error);
-        }
+        const response = await openai.chat.completions.create({
+            model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+            messages,
+            max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+            temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+            top_p: Number(process.env.OPENAI_TOP_P) || 1,
+            n: Number(process.env.OPENAI_N) || 1,
+        });
 
-        // Get the content of the response
-        const responseContent = r.choices[0].message.content;
-
+        const responseContent = response.choices[0].message.content;
         console.log('---------------------------- Stakeholders ----------------------------');
         console.log(responseContent);
 
-        const updatedProject = await project.update(
-            {project_stakeholders: responseContent},
-        );
-        updatedProject.project_stakeholders = responseContent;
+        await project.update({
+            project_stakeholders: responseContent
+        });
 
-
-
-        // Call rolesIteration and pass responseContent
+        // Call rolesIteration with the updated project
         await rolesIteration(project);
 
         return {message: 'Stakeholders identified and saved successfully'};
     } catch (error) {
         console.error('An error occurred:', error);
+        throw error;
     }
 }
-
-
 
 async function rolesIteration(project) {
     const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // Ensure that project is provided
     if (!project) {
         throw new Error('project is required.');
     }
 
     const prompt = `
-    1. Parse stakeholder's ${project.project_stakeholders} and clearly define their role.
-    2. Response should be in Markdown.
+    You are tasked with defining project roles based on the stakeholder analysis.
+
+    Project Charter:
+    ${project.project_outline_charter}
+
+    Stakeholder Analysis:
+    ${project.project_stakeholders}
+
+    Current Roles Content:
+    ${project.project_roles || "No existing content"}
+
+    Your task:
+    1. Review the project charter and stakeholder analysis
+    2. Define clear roles and responsibilities for the project
+    3. For each role identified:
+       - Define the position title
+       - List key responsibilities
+       - Specify required skills/qualifications
+       - Define reporting relationships
+       - Outline authority levels
+    4. Format the output exactly as:
+        # Project Roles and Responsibilities
+
+        ## Core Team Roles
+        [List primary project team roles]
+
+        ## Supporting Roles
+        [List supporting/auxiliary roles]
+
+        ## External Roles
+        [List any external roles/contractors]
+
+    Important Guidelines:
+    - Base roles strictly on information from the charter and stakeholder analysis
+    - Do not invent positions or responsibilities not supported by project documents
+    - Use clear, professional language
+    - Format in proper Markdown
+    - If certain role categories are not present, note "None identified in project charter"
     `;
 
     const messages = [
         {role: 'system', content: prompt},
     ];
 
-
     try {
-        // Generate a response from OpenAI
-        let r;
-        try {
-            r = await openai.chat.completions.create({
-                model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
-                messages,
-                max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
-                temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
-                top_p: Number(process.env.OPENAI_TOP_P) || 1,
-                n: Number(process.env.OPENAI_N) || 1,
-            });
-        } catch (error) {
-            console.error('An error occurred during the OpenAI API call:', error);
-        }
+        const response = await openai.chat.completions.create({
+            model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+            messages,
+            max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+            temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+            top_p: Number(process.env.OPENAI_TOP_P) || 1,
+            n: Number(process.env.OPENAI_N) || 1,
+        });
 
-        // Get the content of the response
-        const responseContent = r.choices[0].message.content;
-
+        const responseContent = response.choices[0].message.content;
         console.log('---------------------------- Roles ----------------------------');
         console.log(responseContent);
 
-        const updatedProject = await project.update(
-            {project_roles: responseContent},
-        );
-        updatedProject.project_roles = responseContent;
+        await project.update({
+            project_roles: responseContent
+        });
 
-        // Call stakeholderIteration and pass responseContent
+        // Call taskIteration with the updated project
         await taskIteration(project);
 
-        return {message: 'Roles identified and saved successfully'};
+        return {message: 'Roles defined and saved successfully'};
     } catch (error) {
         console.error('An error occurred:', error);
+        throw error;
     }
 }
 
+async function taskIteration(project) {
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
+    if (!project) {
+        throw new Error('project is required.');
+    }
 
+    const prompt = `
+    You are tasked with creating a detailed task list based on the project charter.
 
+    Project Charter:
+    ${project.project_outline_charter}
 
+    Work Breakdown Structure:
+    ${project.project_plan_work_breakdown_structure}
 
+    Current Task List:
+    ${project.project_task_list || "No existing tasks"}
 
+    Your task:
+    1. Review the project charter and work breakdown structure
+    2. Create a comprehensive task list that:
+       - Aligns with project goals and objectives
+       - Follows the work breakdown structure
+       - Includes dependencies and priorities
+       - Estimates complexity/effort level
+    3. Format the output exactly as:
+        # Project Task List
 
+        ## High Priority Tasks
+        [List critical path tasks]
 
+        ## Medium Priority Tasks
+        [List important but non-critical tasks]
 
+        ## Low Priority Tasks
+        [List nice-to-have tasks]
 
+        ## Dependencies
+        [List task dependencies and relationships]
 
+    Important Guidelines:
+    - Base tasks strictly on the project charter and WBS
+    - Include clear priorities and dependencies
+    - Use clear, actionable language
+    - Format in proper Markdown
+    - Do not invent tasks not supported by project documentation
+    `;
 
+    const messages = [
+        {role: 'system', content: prompt},
+    ];
 
+    try {
+        const response = await openai.chat.completions.create({
+            model: process.env.OPENAI_MODEL_ENGINE || "gpt-3.5-turbo",
+            messages,
+            max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 1000,
+            temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+            top_p: Number(process.env.OPENAI_TOP_P) || 1,
+            n: Number(process.env.OPENAI_N) || 1,
+        });
 
+        const responseContent = response.choices[0].message.content;
+        console.log('---------------------------- Tasks ----------------------------');
+        console.log(responseContent);
+
+        await project.update({
+            project_task_list: responseContent
+        });
+
+        return {message: 'Task list created and saved successfully'};
+    } catch (error) {
+        console.error('An error occurred:', error);
+        throw error;
+    }
+}
 
 module.exports = router;

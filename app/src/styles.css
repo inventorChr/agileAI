@@ -172,20 +172,49 @@
   font-size: 0.9rem;
 }
 
+/* Budget & Resources Section Specific Styles */
+#project-plan-div .markdown-content h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
 
+#project-plan-div .markdown-content h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #444;
+  padding-left: 1.5rem;
+}
 
+#project-plan-div .markdown-content p {
+  margin: 1rem 0;
+  line-height: 1.6;
+  color: #555;
+  padding-left: 1.5rem;
+}
 
+#project-plan-div .markdown-content ul {
+  margin: 0.5rem 0 1.5rem 3rem;
+  list-style-type: disc;
+}
 
+#project-plan-div .markdown-content ul li {
+  margin: 0.5rem 0;
+  line-height: 1.5;
+  color: #444;
+  padding-left: 0.5rem;
+}
 
-
-
-
-
-
-
-
-
-
+/* Ensure proper spacing between sections */
+#project-plan-div .markdown-content h3 + ul {
+  margin-top: 0.75rem;
+}
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
