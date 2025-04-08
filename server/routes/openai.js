@@ -311,7 +311,43 @@ router.get('/task', async (req, res) => {
     }
 })
 
+// Add update endpoint
+router.post('/:field', async (req, res) => {
+  try {
+    const { id, content } = req.body;
+    const field = req.params.field;
 
+    // Map the field to the database column name
+    const fieldMap = {
+      'title': 'project_outline_title',
+      'summary': 'project_outline_summary',
+      'business_case': 'project_outline_business_case',
+      'goal': 'project_plan_goals',
+      'objective': 'project_plan_objectives',
+      'scope_deliverables': 'project_plan_scope_deliverables',
+      'work_breakdown_structure': 'project_plan_work_breakdown_structure',
+      'timeline_milestones': 'project_plan_timeline_milestones',
+      'budget_resources': 'project_plan_budget_resources',
+      'risk_assumption': 'project_plan_risk_assumptions'
+    };
+
+    const dbField = fieldMap[field];
+    if (!dbField) {
+      return res.status(400).json({ error: 'Invalid field' });
+    }
+
+    // Update the project in the database
+    await db.query(
+      `UPDATE Project SET ${dbField} = $1, updatedAt = $2 WHERE id = $3`,
+      [content, new Date(), id]
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating project content:', error);
+    res.status(500).json({ error: 'Failed to update project content' });
+  }
+});
 
 async function processIdea(project) {
     const openai = new OpenAI({

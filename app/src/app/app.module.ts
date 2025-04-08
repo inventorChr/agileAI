@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { IdeaService } from "./idea-service.service";
+import { IdeaService } from "./services/idea-service.service";
 import { AppRoutingModule } from './app-routing.module';
 // import { LoginComponent } from './login/login.component';
 

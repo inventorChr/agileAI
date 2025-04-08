@@ -64,6 +64,15 @@ export interface TaskResponse {
   task: string;
 }
 
+export interface UpdateResponse {
+  success: boolean;
+}
+
+export interface UpdateRequest {
+  id: number;
+  content: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -139,6 +148,13 @@ export class IdeaService {
 
   getTask(projectId: string): Observable<TaskResponse> {
     return this.http.get<TaskResponse>(`${this.API_URL}/task?id=${projectId}`);
+  }
+
+  updateProjectContent(projectId: number, field: string, content: string): Observable<UpdateResponse> {
+    const url = `${this.API_URL}/${field}`;
+    const request: UpdateRequest = { id: projectId, content };
+    return this.http.post<UpdateResponse>(url, request, this.httpOptions)
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {

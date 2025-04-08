@@ -15,7 +15,7 @@ import {
   RiskAssumptionResponse,
   UpdateResponse,
   TaskResponse
-} from "../idea-service.service";
+} from "../services/idea-service.service";
 import {ActivatedRoute} from "@angular/router";
 import {interval, Subscription, switchMap} from "rxjs";
 import { CommonModule } from '@angular/common';
