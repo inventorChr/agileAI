@@ -1,13 +1,7 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
-import { trigger, state, style, transition, animate } from '@angular/animations';
-import {
-  IdeaService,
-  IdeaResponse
-} from "../services/idea-service.service";
-import { ActivatedRoute } from "@angular/router";
-import { interval, Subscription, switchMap } from "rxjs";
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -49,6 +43,8 @@ import { MarkdownModule } from 'ngx-markdown';
 import { IdeaSubmissionComponent } from '../idea-submission/idea-submission.component';
 import { ProjectOutlineComponent } from '../components/project-outline/project-outline.component';
 import { ProjectPlanComponent } from '../components/project-plan/project-plan.component';
+import { IdeaService, IdeaResponse } from '../services/idea-service.service';
+import { ProjectStateService } from '../services/project-state.service';
 
 @Component({
   selector: 'app-home',
@@ -102,18 +98,45 @@ import { ProjectPlanComponent } from '../components/project-plan/project-plan.co
     ProjectPlanComponent
   ]
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   projectId: number;
   alertMessage: string = '';
   activeTab: string = 'project-outline';
+  isLoading: boolean = false;
 
-  constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef, private ideaService: IdeaService) {
+  constructor(
+    private route: ActivatedRoute,
+    private ideaService: IdeaService,
+    private projectStateService: ProjectStateService
+  ) {
     let id = this.route.snapshot.paramMap.get('id');
     this.projectId = id ? +id : 0;
   }
 
   ngOnInit() {
-    // Initialization logic if needed
+    // Initial setup
+  }
+
+  ngAfterViewInit() {
+    // Ensure data is loaded after view initialization
+    if (this.projectId) {
+      this.loadProjectData();
+    }
+  }
+
+  loadProjectData() {
+    this.isLoading = true;
+    this.projectStateService.fetchProjectData(this.projectId);
+    this.projectStateService.startPolling(this.projectId);
+    
+    // Force change detection after a short delay to ensure components are ready
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 500);
+  }
+
+  onTabChange(event: any) {
+    this.activeTab = event.tab.textLabel.toLowerCase().replace(/\s+/g, '-');
   }
 
   onIdeaSubmitted(event: {idea: string, additionalInfo: string}) {
@@ -121,11 +144,15 @@ export class HomeComponent implements OnInit {
       next: (response: IdeaResponse) => {
         this.alertMessage = 'Generating minions...';
         this.projectId = response.projectId;
-        this.cdr.detectChanges();
+        this.loadProjectData();
       },
       error: (error) => {
         console.error(error);
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.projectStateService.stopPolling();
   }
 }

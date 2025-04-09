@@ -1,10 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MarkdownModule } from 'ngx-markdown';
-import { IdeaService, GoalResponse, ObjectiveResponse, ScopeDeliverablesResponse, WorkBreakdownStructureResponse, TimelineMilestonesResponse, BudgetResourceResponse, RiskAssumptionResponse, TaskResponse } from '../../services/idea-service.service';
+import { IdeaService } from '../../services/idea-service.service';
+import { ProjectStateService } from '../../services/project-state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-project-plan',
@@ -19,7 +21,7 @@ import { IdeaService, GoalResponse, ObjectiveResponse, ScopeDeliverablesResponse
     MarkdownModule
   ]
 })
-export class ProjectPlanComponent implements OnInit {
+export class ProjectPlanComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() projectId: number = 0;
 
   // Project plan sections
@@ -52,113 +54,43 @@ export class ProjectPlanComponent implements OnInit {
   editingRiskAssumptions = '';
   editingTaskBreakdown = '';
 
-  constructor(private ideaService: IdeaService) {}
+  private stateSubscription: Subscription;
+  private dataLoaded = false;
+
+  constructor(
+    private ideaService: IdeaService,
+    private projectStateService: ProjectStateService
+  ) {
+    this.stateSubscription = this.projectStateService.getProjectState().subscribe(state => {
+      this.goals = state.goals;
+      this.objectives = state.objectives;
+      this.scopeDeliverables = state.scopeDeliverables;
+      this.workBreakdownStructure = state.workBreakdownStructure;
+      this.timelineMilestones = state.timelineMilestones;
+      this.budgetResources = state.budgetResources;
+      this.riskAssumptions = state.riskAssumptions;
+      this.taskBreakdown = state.taskBreakdown;
+      this.dataLoaded = true;
+    });
+  }
 
   ngOnInit() {
-    if (this.projectId) {
-      this.fetchProjectPlan();
+    // Initial setup
+  }
+
+  ngAfterViewInit() {
+    // Ensure data is loaded after view initialization
+    if (this.projectId && !this.dataLoaded) {
+      this.loadData();
     }
   }
 
-  fetchProjectPlan() {
-    // Fetch goals
-    this.ideaService.getGoal(this.projectId.toString()).subscribe({
-      next: (response: GoalResponse) => {
-        if (response?.goal) {
-          this.goals = response.goal;
-        }
-      },
-      error: (error: Error) => {
-        console.error('Error fetching goals:', error);
-      }
-    });
-
-    // Fetch objectives
-    this.ideaService.getObjective(this.projectId.toString()).subscribe({
-      next: (response: ObjectiveResponse) => {
-        if (response?.objective) {
-          this.objectives = response.objective;
-        }
-      },
-      error: (error: Error) => {
-        console.error('Error fetching objectives:', error);
-      }
-    });
-
-    // Fetch scope and deliverables
-    this.ideaService.getScopeDeliverables(this.projectId.toString()).subscribe({
-      next: (response: ScopeDeliverablesResponse) => {
-        if (response?.scopeDeliverables) {
-          this.scopeDeliverables = response.scopeDeliverables;
-        }
-      },
-      error: (error: Error) => {
-        console.error('Error fetching scope and deliverables:', error);
-      }
-    });
-
-    // Fetch work breakdown structure
-    this.ideaService.getWorkBreakdownStructure(this.projectId.toString()).subscribe({
-      next: (response: WorkBreakdownStructureResponse) => {
-        if (response?.workBreakdownStructure) {
-          this.workBreakdownStructure = response.workBreakdownStructure;
-        }
-      },
-      error: (error: Error) => {
-        console.error('Error fetching work breakdown structure:', error);
-      }
-    });
-
-    // Fetch timeline and milestones
-    this.ideaService.getTimelineMilestones(this.projectId.toString()).subscribe({
-      next: (response: TimelineMilestonesResponse) => {
-        if (response?.timelineMilestones) {
-          this.timelineMilestones = response.timelineMilestones;
-        }
-      },
-      error: (error: Error) => {
-        console.error('Error fetching timeline and milestones:', error);
-      }
-    });
-
-    // Fetch budget and resources
-    this.ideaService.getBudgetResource(this.projectId.toString()).subscribe({
-      next: (response: BudgetResourceResponse) => {
-        if (response?.budgetResource) {
-          this.budgetResources = response.budgetResource;
-        }
-      },
-      error: (error: Error) => {
-        console.error('Error fetching budget and resources:', error);
-      }
-    });
-
-    // Fetch risks and assumptions
-    this.ideaService.getRiskAssumption(this.projectId.toString()).subscribe({
-      next: (response: RiskAssumptionResponse) => {
-        if (response?.riskAssumption) {
-          this.riskAssumptions = response.riskAssumption;
-        }
-      },
-      error: (error: Error) => {
-        console.error('Error fetching risks and assumptions:', error);
-      }
-    });
-
-    // Fetch task breakdown
-    this.ideaService.getTask(this.projectId.toString()).subscribe({
-      next: (response: TaskResponse) => {
-        if (response?.task) {
-          this.taskBreakdown = response.task;
-        }
-      },
-      error: (error: Error) => {
-        console.error('Error fetching task breakdown:', error);
-      }
-    });
+  loadData() {
+    if (this.projectId) {
+      this.projectStateService.fetchProjectData(this.projectId);
+    }
   }
 
-  // Start editing methods
   startEditing(section: string) {
     switch (section) {
       case 'goals':
@@ -196,45 +128,35 @@ export class ProjectPlanComponent implements OnInit {
     }
   }
 
-  // Cancel editing methods
   cancelEditing(section: string) {
     switch (section) {
       case 'goals':
         this.isEditingGoals = false;
-        this.editingGoals = '';
         break;
       case 'objectives':
         this.isEditingObjectives = false;
-        this.editingObjectives = '';
         break;
       case 'scope_deliverables':
         this.isEditingScopeDeliverables = false;
-        this.editingScopeDeliverables = '';
         break;
       case 'work_breakdown_structure':
         this.isEditingWorkBreakdownStructure = false;
-        this.editingWorkBreakdownStructure = '';
         break;
       case 'timeline_milestones':
         this.isEditingTimelineMilestones = false;
-        this.editingTimelineMilestones = '';
         break;
       case 'budget_resources':
         this.isEditingBudgetResources = false;
-        this.editingBudgetResources = '';
         break;
       case 'risk_assumptions':
         this.isEditingRiskAssumptions = false;
-        this.editingRiskAssumptions = '';
         break;
       case 'task_breakdown':
         this.isEditingTaskBreakdown = false;
-        this.editingTaskBreakdown = '';
         break;
     }
   }
 
-  // Save editing methods
   saveEditing(section: string) {
     switch (section) {
       case 'goals':
@@ -242,9 +164,10 @@ export class ProjectPlanComponent implements OnInit {
           next: () => {
             this.goals = this.editingGoals;
             this.isEditingGoals = false;
+            this.projectStateService.updateProjectState({ goals: this.goals });
           },
           error: (error: Error) => {
-            console.error('Error updating goals:', error);
+            console.error('Error saving goals:', error);
           }
         });
         break;
@@ -253,9 +176,10 @@ export class ProjectPlanComponent implements OnInit {
           next: () => {
             this.objectives = this.editingObjectives;
             this.isEditingObjectives = false;
+            this.projectStateService.updateProjectState({ objectives: this.objectives });
           },
           error: (error: Error) => {
-            console.error('Error updating objectives:', error);
+            console.error('Error saving objectives:', error);
           }
         });
         break;
@@ -264,9 +188,10 @@ export class ProjectPlanComponent implements OnInit {
           next: () => {
             this.scopeDeliverables = this.editingScopeDeliverables;
             this.isEditingScopeDeliverables = false;
+            this.projectStateService.updateProjectState({ scopeDeliverables: this.scopeDeliverables });
           },
           error: (error: Error) => {
-            console.error('Error updating scope and deliverables:', error);
+            console.error('Error saving scope and deliverables:', error);
           }
         });
         break;
@@ -275,9 +200,10 @@ export class ProjectPlanComponent implements OnInit {
           next: () => {
             this.workBreakdownStructure = this.editingWorkBreakdownStructure;
             this.isEditingWorkBreakdownStructure = false;
+            this.projectStateService.updateProjectState({ workBreakdownStructure: this.workBreakdownStructure });
           },
           error: (error: Error) => {
-            console.error('Error updating work breakdown structure:', error);
+            console.error('Error saving work breakdown structure:', error);
           }
         });
         break;
@@ -286,9 +212,10 @@ export class ProjectPlanComponent implements OnInit {
           next: () => {
             this.timelineMilestones = this.editingTimelineMilestones;
             this.isEditingTimelineMilestones = false;
+            this.projectStateService.updateProjectState({ timelineMilestones: this.timelineMilestones });
           },
           error: (error: Error) => {
-            console.error('Error updating timeline and milestones:', error);
+            console.error('Error saving timeline and milestones:', error);
           }
         });
         break;
@@ -297,9 +224,10 @@ export class ProjectPlanComponent implements OnInit {
           next: () => {
             this.budgetResources = this.editingBudgetResources;
             this.isEditingBudgetResources = false;
+            this.projectStateService.updateProjectState({ budgetResources: this.budgetResources });
           },
           error: (error: Error) => {
-            console.error('Error updating budget and resources:', error);
+            console.error('Error saving budget and resources:', error);
           }
         });
         break;
@@ -308,93 +236,35 @@ export class ProjectPlanComponent implements OnInit {
           next: () => {
             this.riskAssumptions = this.editingRiskAssumptions;
             this.isEditingRiskAssumptions = false;
+            this.projectStateService.updateProjectState({ riskAssumptions: this.riskAssumptions });
           },
           error: (error: Error) => {
-            console.error('Error updating risks and assumptions:', error);
+            console.error('Error saving risks and assumptions:', error);
           }
         });
         break;
       case 'task_breakdown':
-        this.ideaService.updateProjectContent(this.projectId, 'task_breakdown', this.editingTaskBreakdown).subscribe({
+        this.ideaService.updateProjectContent(this.projectId, 'task', this.editingTaskBreakdown).subscribe({
           next: () => {
             this.taskBreakdown = this.editingTaskBreakdown;
             this.isEditingTaskBreakdown = false;
+            this.projectStateService.updateProjectState({ taskBreakdown: this.taskBreakdown });
           },
           error: (error: Error) => {
-            console.error('Error updating task breakdown:', error);
+            console.error('Error saving task breakdown:', error);
           }
         });
         break;
     }
   }
 
-  // Clean content methods
   getCleanContent(content: string): string {
-    return content ? content.trim() : '';
+    return content || 'Loading...';
   }
 
-  updateGoals(): void {
-    if (this.projectId) {
-      this.ideaService.updateProjectContent(this.projectId, 'goals', this.goals).subscribe({
-        next: () => {
-          this.isEditingGoals = false;
-        },
-        error: (error: Error) => {
-          console.error('Error updating goals:', error);
-        }
-      });
-    }
-  }
-
-  updateObjectives(): void {
-    if (this.projectId) {
-      this.ideaService.updateProjectContent(this.projectId, 'objectives', this.objectives).subscribe({
-        next: () => {
-          this.isEditingObjectives = false;
-        },
-        error: (error: Error) => {
-          console.error('Error updating objectives:', error);
-        }
-      });
-    }
-  }
-
-  updateBudgetResources(): void {
-    if (this.projectId) {
-      this.ideaService.updateProjectContent(this.projectId, 'budgetResources', this.budgetResources).subscribe({
-        next: () => {
-          this.isEditingBudgetResources = false;
-        },
-        error: (error: Error) => {
-          console.error('Error updating budget and resources:', error);
-        }
-      });
-    }
-  }
-
-  updateRiskAssumptions(): void {
-    if (this.projectId) {
-      this.ideaService.updateProjectContent(this.projectId, 'riskAssumptions', this.riskAssumptions).subscribe({
-        next: () => {
-          this.isEditingRiskAssumptions = false;
-        },
-        error: (error: Error) => {
-          console.error('Error updating risks and assumptions:', error);
-        }
-      });
-    }
-  }
-
-  updateTaskBreakdown(): void {
-    if (this.projectId) {
-      this.ideaService.updateProjectContent(this.projectId, 'taskBreakdown', this.taskBreakdown).subscribe({
-        next: () => {
-          this.isEditingTaskBreakdown = false;
-        },
-        error: (error: Error) => {
-          console.error('Error updating task breakdown:', error);
-        }
-      });
+  ngOnDestroy() {
+    if (this.stateSubscription) {
+      this.stateSubscription.unsubscribe();
     }
   }
 }
