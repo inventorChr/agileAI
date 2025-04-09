@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+
 @keyframes color-change {
   0% {
     color: #f94144;
