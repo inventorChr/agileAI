@@ -440,6 +440,7 @@ async function charterIteration(responseContent, project) {
 
     const prompt = `
     Based on the following discussion: "${project.project_conversation}"
+    Project Title: ${project.project_outline_title}
     Date: ${formattedDate}
 
     Your task:
@@ -1712,5 +1713,37 @@ async function taskIteration(project) {
         throw error;
     }
 }
+
+router.get('/project/:id/status', async (req, res) => {
+    try {
+        const Project = req.db.models.Project;
+        const project = await Project.findByPk(req.params.id);
+
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+
+        // Check if all required fields are populated
+        const isComplete = project.project_outline_title &&
+            project.project_outline_summary &&
+            project.project_outline_business_case &&
+            project.project_plan_goals &&
+            project.project_plan_objectives &&
+            project.project_plan_scope_deliverables &&
+            project.project_plan_work_breakdown_structure &&
+            project.project_plan_timeline_milestones &&
+            project.project_plan_budget_resources &&
+            project.project_plan_risk_assumptions &&
+            project.project_task_list;
+
+        res.json({
+            status: isComplete ? 'complete' : 'in_progress',
+            message: isComplete ? 'Project data is complete' : 'Project data is still being generated'
+        });
+    } catch (error) {
+        console.error('Error checking project status:', error);
+        res.status(500).json({ error: 'Failed to check project status' });
+    }
+});
 
 module.exports = router;

@@ -73,6 +73,11 @@ export interface UpdateRequest {
   content: string;
 }
 
+export interface ProjectStatusResponse {
+  status: string;
+  message?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -155,6 +160,10 @@ export class IdeaService {
     const request: UpdateRequest = { id: projectId, content };
     return this.http.post<UpdateResponse>(url, request, this.httpOptions)
       .pipe(catchError(this.handleError));
+  }
+
+  getProjectStatus(projectId: string): Observable<ProjectStatusResponse> {
+    return this.http.get<ProjectStatusResponse>(`${this.API_URL}/project/${projectId}/status`);
   }
 
   private handleError(error: HttpErrorResponse) {

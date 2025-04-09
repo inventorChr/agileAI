@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, interval, Subscription, of } from 'rxjs';
-import { switchMap, takeWhile, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, interval, Subscription, of, forkJoin } from 'rxjs';
+import { switchMap, takeWhile, tap, debounceTime, map } from 'rxjs/operators';
 import { IdeaService } from './idea-service.service';
 
 export interface ProjectState {
@@ -15,6 +15,7 @@ export interface ProjectState {
   budgetResources: string;
   riskAssumptions: string;
   taskBreakdown: string;
+  isComplete: boolean;
 }
 
 @Injectable({
@@ -32,12 +33,16 @@ export class ProjectStateService {
     timelineMilestones: '',
     budgetResources: '',
     riskAssumptions: '',
-    taskBreakdown: ''
+    taskBreakdown: '',
+    isComplete: false
   });
 
   private currentProjectId: number | null = null;
   private pollingSubscription: Subscription | null = null;
-  private readonly POLLING_INTERVAL = 5000; // 5 seconds
+  private readonly POLLING_INTERVAL = 10000; // 10 seconds
+  private lastUpdateTime: number = 0;
+  private readonly MIN_UPDATE_INTERVAL = 5000; // 5 seconds minimum between updates
+  private isDataComplete: boolean = false;
 
   constructor(private ideaService: IdeaService) {}
 
@@ -59,11 +64,18 @@ export class ProjectStateService {
     this.stopPolling();
     
     this.currentProjectId = projectId;
+    this.isDataComplete = false;
     
-    // Start new polling
+    // Start new polling with debounce
     this.pollingSubscription = interval(this.POLLING_INTERVAL).pipe(
-      takeWhile(() => this.currentProjectId === projectId),
+      takeWhile(() => this.currentProjectId === projectId && !this.isDataComplete),
+      debounceTime(1000), // Debounce for 1 second
       switchMap(() => {
+        const now = Date.now();
+        if (now - this.lastUpdateTime < this.MIN_UPDATE_INTERVAL) {
+          return of(null);
+        }
+        this.lastUpdateTime = now;
         this.fetchProjectData(projectId);
         return of(null);
       })
@@ -79,145 +91,114 @@ export class ProjectStateService {
   }
 
   fetchProjectData(projectId: number) {
-    // Fetch title
-    this.ideaService.getTitle(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.title) {
-          const titleMatch = response.title.match(/^#[^"]*"([^"]+)"/);
+    // Fetch all data in parallel using forkJoin
+    forkJoin({
+      title: this.ideaService.getTitle(projectId.toString()),
+      summary: this.ideaService.getSummary(projectId.toString()),
+      businessCase: this.ideaService.getBusinessCase(projectId.toString()),
+      goal: this.ideaService.getGoal(projectId.toString()),
+      objective: this.ideaService.getObjective(projectId.toString()),
+      scopeDeliverables: this.ideaService.getScopeDeliverables(projectId.toString()),
+      workBreakdownStructure: this.ideaService.getWorkBreakdownStructure(projectId.toString()),
+      timelineMilestones: this.ideaService.getTimelineMilestones(projectId.toString()),
+      budgetResource: this.ideaService.getBudgetResource(projectId.toString()),
+      riskAssumption: this.ideaService.getRiskAssumption(projectId.toString()),
+      task: this.ideaService.getTask(projectId.toString()),
+      status: this.ideaService.getProjectStatus(projectId.toString())
+    }).subscribe({
+      next: (responses) => {
+        const updates: Partial<ProjectState> = {};
+
+        if (responses.title?.title) {
+          const titleMatch = responses.title.title.match(/^#[^"]*"([^"]+)"/);
           const title = titleMatch && titleMatch[1] 
             ? titleMatch[1] 
-            : response.title.replace(/^#\s*Project Title:\s*\n/i, '').replace(/^["']|["']$/g, '').trim();
+            : responses.title.title.replace(/^#\s*Project Title:\s*\n/i, '').replace(/^["']|["']$/g, '').trim();
           if (title !== this.projectState.value.title) {
-            this.updateProjectState({ title });
+            updates.title = title;
           }
         }
-      },
-      error: (error) => console.error('Error fetching title:', error)
-    });
 
-    // Fetch summary
-    this.ideaService.getSummary(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.summary) {
-          const summary = response.summary
+        if (responses.summary?.summary) {
+          const summary = responses.summary.summary
             .replace(/\r\n/g, '\n')
             .replace(/^\s*[-*]\s/gm, '* ')
             .replace(/^\s*(\d+)\.\s/gm, '$1. ')
             .trim();
           if (summary !== this.projectState.value.summary) {
-            this.updateProjectState({ summary });
+            updates.summary = summary;
           }
         }
-      },
-      error: (error) => console.error('Error fetching summary:', error)
-    });
 
-    // Fetch business case
-    this.ideaService.getBusinessCase(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.businessCase) {
-          if (response.businessCase !== this.projectState.value.businessCase) {
-            this.updateProjectState({ businessCase: response.businessCase });
+        if (responses.businessCase?.businessCase) {
+          if (responses.businessCase.businessCase !== this.projectState.value.businessCase) {
+            updates.businessCase = responses.businessCase.businessCase;
           }
         }
-      },
-      error: (error) => console.error('Error fetching business case:', error)
-    });
 
-    // Fetch goals
-    this.ideaService.getGoal(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.goal) {
-          if (response.goal !== this.projectState.value.goals) {
-            this.updateProjectState({ goals: response.goal });
+        if (responses.goal?.goal) {
+          if (responses.goal.goal !== this.projectState.value.goals) {
+            updates.goals = responses.goal.goal;
           }
         }
-      },
-      error: (error) => console.error('Error fetching goals:', error)
-    });
 
-    // Fetch objectives
-    this.ideaService.getObjective(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.objective) {
-          if (response.objective !== this.projectState.value.objectives) {
-            this.updateProjectState({ objectives: response.objective });
+        if (responses.objective?.objective) {
+          if (responses.objective.objective !== this.projectState.value.objectives) {
+            updates.objectives = responses.objective.objective;
           }
         }
-      },
-      error: (error) => console.error('Error fetching objectives:', error)
-    });
 
-    // Fetch scope deliverables
-    this.ideaService.getScopeDeliverables(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.scopeDeliverables) {
-          if (response.scopeDeliverables !== this.projectState.value.scopeDeliverables) {
-            this.updateProjectState({ scopeDeliverables: response.scopeDeliverables });
+        if (responses.scopeDeliverables?.scopeDeliverables) {
+          if (responses.scopeDeliverables.scopeDeliverables !== this.projectState.value.scopeDeliverables) {
+            updates.scopeDeliverables = responses.scopeDeliverables.scopeDeliverables;
           }
         }
-      },
-      error: (error) => console.error('Error fetching scope deliverables:', error)
-    });
 
-    // Fetch work breakdown structure
-    this.ideaService.getWorkBreakdownStructure(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.workBreakdownStructure) {
-          if (response.workBreakdownStructure !== this.projectState.value.workBreakdownStructure) {
-            this.updateProjectState({ workBreakdownStructure: response.workBreakdownStructure });
+        if (responses.workBreakdownStructure?.workBreakdownStructure) {
+          if (responses.workBreakdownStructure.workBreakdownStructure !== this.projectState.value.workBreakdownStructure) {
+            updates.workBreakdownStructure = responses.workBreakdownStructure.workBreakdownStructure;
           }
         }
-      },
-      error: (error) => console.error('Error fetching work breakdown structure:', error)
-    });
 
-    // Fetch timeline milestones
-    this.ideaService.getTimelineMilestones(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.timelineMilestones) {
-          if (response.timelineMilestones !== this.projectState.value.timelineMilestones) {
-            this.updateProjectState({ timelineMilestones: response.timelineMilestones });
+        if (responses.timelineMilestones?.timelineMilestones) {
+          if (responses.timelineMilestones.timelineMilestones !== this.projectState.value.timelineMilestones) {
+            updates.timelineMilestones = responses.timelineMilestones.timelineMilestones;
           }
         }
-      },
-      error: (error) => console.error('Error fetching timeline milestones:', error)
-    });
 
-    // Fetch budget resources
-    this.ideaService.getBudgetResource(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.budgetResource) {
-          if (response.budgetResource !== this.projectState.value.budgetResources) {
-            this.updateProjectState({ budgetResources: response.budgetResource });
+        if (responses.budgetResource?.budgetResource) {
+          if (responses.budgetResource.budgetResource !== this.projectState.value.budgetResources) {
+            updates.budgetResources = responses.budgetResource.budgetResource;
           }
         }
-      },
-      error: (error) => console.error('Error fetching budget resources:', error)
-    });
 
-    // Fetch risk assumptions
-    this.ideaService.getRiskAssumption(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.riskAssumption) {
-          if (response.riskAssumption !== this.projectState.value.riskAssumptions) {
-            this.updateProjectState({ riskAssumptions: response.riskAssumption });
+        if (responses.riskAssumption?.riskAssumption) {
+          if (responses.riskAssumption.riskAssumption !== this.projectState.value.riskAssumptions) {
+            updates.riskAssumptions = responses.riskAssumption.riskAssumption;
           }
         }
-      },
-      error: (error) => console.error('Error fetching risk assumptions:', error)
-    });
 
-    // Fetch task breakdown
-    this.ideaService.getTask(projectId.toString()).subscribe({
-      next: (response) => {
-        if (response?.task) {
-          if (response.task !== this.projectState.value.taskBreakdown) {
-            this.updateProjectState({ taskBreakdown: response.task });
+        if (responses.task?.task) {
+          if (responses.task.task !== this.projectState.value.taskBreakdown) {
+            updates.taskBreakdown = responses.task.task;
           }
         }
+
+        // Check if the project is complete
+        if (responses.status?.status === 'complete') {
+          this.isDataComplete = true;
+          updates.isComplete = true;
+          this.stopPolling();
+        }
+
+        // Only update state if there are changes
+        if (Object.keys(updates).length > 0) {
+          this.updateProjectState(updates);
+        }
       },
-      error: (error) => console.error('Error fetching task breakdown:', error)
+      error: (error) => {
+        console.error('Error fetching project data:', error);
+      }
     });
   }
 } 
