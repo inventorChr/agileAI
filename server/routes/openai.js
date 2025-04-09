@@ -1186,6 +1186,10 @@ async function budgetResourcesIteration(project) {
     const prompt = `
     You are tasked with enhancing the Budget and Resources section of a project charter.
 
+    Original Project Idea Context:
+    Idea: ${project.project_idea}
+    Additional Info: ${project.project_additional_info}
+
     Original Project Charter:
     ${project.project_outline_charter}
 
@@ -1193,13 +1197,13 @@ async function budgetResourcesIteration(project) {
     ${project.project_plan_budget_resources || "No existing content"}
 
     Your task:
-    1. First, locate and analyze the Budget and Resources section from the original project charter
-    2. Then, enhance and expand this section while maintaining consistency with the original charter
-    3. Generate a detailed breakdown following this EXACT structure:
+    1. First, locate and analyze the Budget and Resources section from the original project charter.
+    2. Cross-reference this with any budget details mentioned in the 'Additional Info' provided above. Prioritize using budget figures from the 'Additional Info' if available.
+    3. Enhance and expand the Budget and Resources section while maintaining consistency with the original charter and incorporating details from the 'Additional Info'.
+    4. Generate a detailed breakdown following this EXACT structure:
 
     ## Budget Overview
-    [Provide a comprehensive budget overview. Include all specific amounts mentioned in the charter.
-     If no specific budget is mentioned, clearly state what is known about financial constraints or expectations]
+    [Provide a comprehensive budget overview. Use specific amounts from the 'Additional Info' if provided, otherwise use amounts from the charter. If no specific budget is mentioned anywhere, state what is known about financial constraints.]
 
     ## Resources Required
 
@@ -1219,7 +1223,7 @@ async function budgetResourcesIteration(project) {
     - Other material needs
 
     ### Financial Resources
-    [Provide detailed financial breakdown]
+    [Provide detailed financial breakdown. Prioritize using figures from 'Additional Info'. List all specific financial details found.]
     - Development costs
     - Marketing/Promotion costs
     - Operational costs
@@ -1234,13 +1238,13 @@ async function budgetResourcesIteration(project) {
     - Key time constraints
 
     Important Guidelines:
-    1. Maintain consistency with the original charter - do not contradict any existing information
-    2. Expand upon the original content with more detail and structure
-    3. For any category where details are not provided, explicitly state "Not specified in project charter"
-    4. Use bullet points for lists
-    5. Maintain proper markdown formatting
-    6. If specific amounts or numbers are mentioned in the charter, always include them
-    7. Do not invent or assume details not present in the original charter
+    1. Maintain consistency with the original charter - do not contradict any existing information.
+    2. Expand upon the original content with more detail and structure.
+    3. Prioritize using budget figures and financial details from the 'Additional Info' field if they exist.
+    4. For any category where details are not provided in either the charter or additional info, explicitly state "Not specified".
+    5. Use bullet points for lists.
+    6. Maintain proper markdown formatting.
+    7. Do not invent or assume details not present in the provided context.
 
     Format your response using proper Markdown, ensuring clear hierarchy and readability.
     `;

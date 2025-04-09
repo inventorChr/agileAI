@@ -675,6 +675,7 @@ export class HomeComponent implements OnInit {
   getCleanSummary(): string {
     if (!this.summary) return '';
     return this.summary
+      .replace(/^[#\s]*Project Summary:?\s*/i, '') // Remove "Project Summary:" and any #
       .replace(/^[#\s]*Summary:?\s*/i, '')       // Remove "Summary:" and any #
       .replace(/^['"`]*|['"`]*$/g, '')           // Remove quotes/backticks
       .replace(/^markdown\s*/i, '')              // Remove 'markdown' text
