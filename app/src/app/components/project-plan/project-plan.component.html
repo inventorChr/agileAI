@@ -1,0 +1,177 @@
+<div class="project-plan">
+  <!-- Goals Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Goals</h2>
+      <button *ngIf="!isEditingGoals" (click)="startEditing('goals')" class="edit-button" matTooltip="Edit goals">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div class="section-content">
+      <div *ngIf="isEditingGoals" class="edit-form">
+        <textarea [(ngModel)]="editingGoals" placeholder="Enter project goals"></textarea>
+        <div class="button-group">
+          <button (click)="cancelEditing('goals')">Cancel</button>
+          <button (click)="saveEditing('goals')">Save</button>
+        </div>
+      </div>
+      <div *ngIf="!isEditingGoals" class="markdown-content">
+        <markdown [data]="getCleanContent(goals)"></markdown>
+      </div>
+    </div>
+  </div>
+
+  <!-- Objectives Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Objectives</h2>
+      <button *ngIf="!isEditingObjectives" (click)="startEditing('objectives')" class="edit-button" matTooltip="Edit objectives">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div class="section-content">
+      <div *ngIf="isEditingObjectives" class="edit-form">
+        <textarea [(ngModel)]="editingObjectives" placeholder="Enter project objectives"></textarea>
+        <div class="button-group">
+          <button (click)="cancelEditing('objectives')">Cancel</button>
+          <button (click)="saveEditing('objectives')">Save</button>
+        </div>
+      </div>
+      <div *ngIf="!isEditingObjectives" class="markdown-content">
+        <markdown [data]="getCleanContent(objectives)"></markdown>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scope & Deliverables Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Scope & Deliverables</h2>
+      <button *ngIf="!isEditingScopeDeliverables" (click)="startEditing('scope_deliverables')" class="edit-button" matTooltip="Edit scope and deliverables">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div class="section-content">
+      <div *ngIf="isEditingScopeDeliverables" class="edit-form">
+        <textarea [(ngModel)]="editingScopeDeliverables" placeholder="Enter project scope and deliverables"></textarea>
+        <div class="button-group">
+          <button (click)="cancelEditing('scope_deliverables')">Cancel</button>
+          <button (click)="saveEditing('scope_deliverables')">Save</button>
+        </div>
+      </div>
+      <div *ngIf="!isEditingScopeDeliverables" class="markdown-content">
+        <markdown [data]="getCleanContent(scopeDeliverables)"></markdown>
+      </div>
+    </div>
+  </div>
+
+  <!-- Work Breakdown Structure Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Work Breakdown Structure</h2>
+      <button *ngIf="!isEditingWorkBreakdownStructure" (click)="startEditing('work_breakdown_structure')" class="edit-button" matTooltip="Edit work breakdown structure">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div class="section-content">
+      <div *ngIf="isEditingWorkBreakdownStructure" class="edit-form">
+        <textarea [(ngModel)]="editingWorkBreakdownStructure" placeholder="Enter work breakdown structure"></textarea>
+        <div class="button-group">
+          <button (click)="cancelEditing('work_breakdown_structure')">Cancel</button>
+          <button (click)="saveEditing('work_breakdown_structure')">Save</button>
+        </div>
+      </div>
+      <div *ngIf="!isEditingWorkBreakdownStructure" class="markdown-content">
+        <markdown [data]="getCleanContent(workBreakdownStructure)"></markdown>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline & Milestones Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Timeline & Milestones</h2>
+      <button *ngIf="!isEditingTimelineMilestones" (click)="startEditing('timeline_milestones')" class="edit-button" matTooltip="Edit timeline and milestones">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div class="section-content">
+      <div *ngIf="isEditingTimelineMilestones" class="edit-form">
+        <textarea [(ngModel)]="editingTimelineMilestones" placeholder="Enter timeline and milestones"></textarea>
+        <div class="button-group">
+          <button (click)="cancelEditing('timeline_milestones')">Cancel</button>
+          <button (click)="saveEditing('timeline_milestones')">Save</button>
+        </div>
+      </div>
+      <div *ngIf="!isEditingTimelineMilestones" class="markdown-content">
+        <markdown [data]="getCleanContent(timelineMilestones)"></markdown>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget & Resources Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Budget & Resources</h2>
+      <button *ngIf="!isEditingBudgetResources" (click)="startEditing('budget_resources')" class="edit-button" matTooltip="Edit budget and resources">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div class="section-content">
+      <div *ngIf="isEditingBudgetResources" class="edit-form">
+        <textarea [(ngModel)]="editingBudgetResources" placeholder="Enter budget and resources"></textarea>
+        <div class="button-group">
+          <button (click)="cancelEditing('budget_resources')">Cancel</button>
+          <button (click)="saveEditing('budget_resources')">Save</button>
+        </div>
+      </div>
+      <div *ngIf="!isEditingBudgetResources" class="markdown-content">
+        <markdown [data]="getCleanContent(budgetResources)"></markdown>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk & Assumptions Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Risk & Assumptions</h2>
+      <button *ngIf="!isEditingRiskAssumptions" (click)="startEditing('risk_assumptions')" class="edit-button" matTooltip="Edit risks and assumptions">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div class="section-content">
+      <div *ngIf="isEditingRiskAssumptions" class="edit-form">
+        <textarea [(ngModel)]="editingRiskAssumptions" placeholder="Enter risks and assumptions"></textarea>
+        <div class="button-group">
+          <button (click)="cancelEditing('risk_assumptions')">Cancel</button>
+          <button (click)="saveEditing('risk_assumptions')">Save</button>
+        </div>
+      </div>
+      <div *ngIf="!isEditingRiskAssumptions" class="markdown-content">
+        <markdown [data]="getCleanContent(riskAssumptions)"></markdown>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task Breakdown Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Task Breakdown</h2>
+      <button *ngIf="!isEditingTaskBreakdown" (click)="startEditing('task_breakdown')" class="edit-button" matTooltip="Edit task breakdown">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div class="section-content">
+      <div *ngIf="isEditingTaskBreakdown" class="edit-form">
+        <textarea [(ngModel)]="editingTaskBreakdown" placeholder="Enter task breakdown"></textarea>
+        <div class="button-group">
+          <button (click)="cancelEditing('task_breakdown')">Cancel</button>
+          <button (click)="saveEditing('task_breakdown')">Save</button>
+        </div>
+      </div>
+      <div *ngIf="!isEditingTaskBreakdown" class="markdown-content">
+        <markdown [data]="getCleanContent(taskBreakdown)"></markdown>
+      </div>
+    </div>
+  </div>
+</div>

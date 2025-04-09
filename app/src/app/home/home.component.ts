@@ -48,6 +48,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MarkdownModule } from 'ngx-markdown';
 import { IdeaSubmissionComponent } from '../idea-submission/idea-submission.component';
 import { ProjectOutlineComponent } from '../components/project-outline/project-outline.component';
+import { ProjectPlanComponent } from '../components/project-plan/project-plan.component';
 
 @Component({
   selector: 'app-home',
@@ -97,7 +98,8 @@ import { ProjectOutlineComponent } from '../components/project-outline/project-o
     HttpClientModule,
     MarkdownModule,
     IdeaSubmissionComponent,
-    ProjectOutlineComponent
+    ProjectOutlineComponent,
+    ProjectPlanComponent
   ]
 })
 export class HomeComponent implements OnInit {

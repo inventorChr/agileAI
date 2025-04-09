@@ -31,11 +31,7 @@
         </div>
 
         <div class="tab-content" *ngIf="activeTab === 'project-plan'">
-          <!-- Project plan content will be moved to a separate component later -->
-          <div class="section">
-            <h2 class="section-title">Project Plan Content</h2>
-            <p>Project plan content will be implemented in a separate component.</p>
-          </div>
+          <app-project-plan [projectId]="projectId"></app-project-plan>
         </div>
       </div>
     </section>
