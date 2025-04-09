@@ -14,6 +14,7 @@ import { HomeComponent } from './home/home.component';
 import { IdeaService } from "./services/idea-service.service";
 import { AppRoutingModule } from './app-routing.module';
 import { IdeaSubmissionComponent } from './idea-submission/idea-submission.component';
+import { ProjectOutlineComponent } from './components/project-outline/project-outline.component';
 // import { LoginComponent } from './login/login.component';
 
 @NgModule({
@@ -23,7 +24,8 @@ import { IdeaSubmissionComponent } from './idea-submission/idea-submission.compo
     // HeaderComponent,
     // FooterComponent
   
-    IdeaSubmissionComponent
+    IdeaSubmissionComponent,
+    ProjectOutlineComponent
   ],
   imports: [
     BrowserModule,

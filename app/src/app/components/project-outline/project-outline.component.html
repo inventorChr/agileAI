@@ -1,0 +1,63 @@
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">Project Title</h2>
+    <button *ngIf="!isEditingTitle" (click)="startEditing('title')" class="edit-button" matTooltip="Edit title">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+  <div class="section-content">
+    <div *ngIf="isEditingTitle" class="edit-form">
+      <textarea [(ngModel)]="editingTitle" placeholder="Enter project title"></textarea>
+      <div class="button-group">
+        <button (click)="cancelEditing('title')">Cancel</button>
+        <button (click)="saveEditing('title')">Save</button>
+      </div>
+    </div>
+    <div *ngIf="!isEditingTitle" class="markdown-content">
+      <h1 class="project-title" *ngIf="title">{{ title }}</h1>
+      <div *ngIf="!title" class="loading-indicator">Loading title...</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">Project Summary</h2>
+    <button *ngIf="!isEditingSummary" (click)="startEditing('summary')" class="edit-button" matTooltip="Edit summary">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+  <div class="section-content">
+    <div *ngIf="isEditingSummary" class="edit-form">
+      <textarea [(ngModel)]="editingSummary"></textarea>
+      <div class="button-group">
+        <button (click)="cancelEditing('summary')">Cancel</button>
+        <button (click)="saveEditing('summary')">Save</button>
+      </div>
+    </div>
+    <div *ngIf="!isEditingSummary" class="markdown-content">
+      <markdown [data]="getCleanSummary()"></markdown>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">Business Case</h2>
+    <button *ngIf="!isEditingBusinessCase" (click)="startEditing('business_case')" class="edit-button" matTooltip="Edit business case">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+  <div class="section-content">
+    <div *ngIf="isEditingBusinessCase" class="edit-form">
+      <textarea [(ngModel)]="editingBusinessCase"></textarea>
+      <div class="button-group">
+        <button (click)="cancelEditing('business_case')">Cancel</button>
+        <button (click)="saveEditing('business_case')">Save</button>
+      </div>
+    </div>
+    <div *ngIf="!isEditingBusinessCase" class="markdown-content">
+      <markdown [data]="getCleanBusinessCase()"></markdown>
+    </div>
+  </div>
+</div>
