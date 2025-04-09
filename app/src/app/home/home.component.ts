@@ -58,6 +58,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { HttpClientModule } from '@angular/common/http';
 import { MarkdownModule } from 'ngx-markdown';
+import { IdeaSubmissionComponent } from '../idea-submission/idea-submission.component';
 
 @Component({
   selector: 'app-home',
@@ -105,14 +106,13 @@ import { MarkdownModule } from 'ngx-markdown';
     MatGridListModule,
     MatProgressBarModule,
     HttpClientModule,
-    MarkdownModule
+    MarkdownModule,
+    IdeaSubmissionComponent
   ]
 })
 
 export class HomeComponent implements OnInit {
   projectId: number;
-  idea: string = '';
-  additionalInfo: string = '';
   alertMessage: string = '';
   title: string = '';
   summary: string = '';
@@ -171,12 +171,9 @@ export class HomeComponent implements OnInit {
     this.startFetchingData();
   }
 
-  submitIdea() {
-    this.ideaService.saveIdea(this.idea, this.additionalInfo).subscribe({
+  onIdeaSubmitted(event: {idea: string, additionalInfo: string}) {
+    this.ideaService.saveIdea(event.idea, event.additionalInfo).subscribe({
       next: (response: IdeaResponse) => {
-        // Handle successful save
-        this.idea = '';
-        this.additionalInfo = '';
         this.alertMessage = 'Generating minions...';
         this.projectId = response.projectId;
 
@@ -188,23 +185,10 @@ export class HomeComponent implements OnInit {
         this.startFetchingData();
       },
       error: (error) => {
-        // Handle error in saving
         console.error(error);
       }
     });
   }
-  // saveSettings() {
-  //   this.ideaService.saveSettings(this.openai_key).subscribe({
-  //     next: (response: KeyResponse) => {
-  //       // Handle successful save
-  //       this.projectId = response.projectId;
-  //     },
-  //     error: (error) => {
-  //       // Handle error in saving
-  //       console.error(error);
-  //     }
-  //   })
-  // }
 
   startFetchingData() {
     if (this.projectId) {

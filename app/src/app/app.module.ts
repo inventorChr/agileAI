@@ -13,6 +13,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { IdeaService } from "./services/idea-service.service";
 import { AppRoutingModule } from './app-routing.module';
+import { IdeaSubmissionComponent } from './idea-submission/idea-submission.component';
 // import { LoginComponent } from './login/login.component';
 
 @NgModule({
@@ -21,6 +22,8 @@ import { AppRoutingModule } from './app-routing.module';
   
     // HeaderComponent,
     // FooterComponent
+  
+    IdeaSubmissionComponent
   ],
   imports: [
     BrowserModule,
